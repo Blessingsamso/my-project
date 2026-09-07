@@ -4,140 +4,188 @@
 {% block title %}Browse Land Listings | Land for crypto{% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
   <!-- Page Header -->
-  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
     <div>
-      <h1 class="font-monospace text-dark fw-bold mb-1 fs-2"><i class="fa-solid fa-earth-africa text-success me-2"></i> Land Marketplace</h1>
-      <p class="text-muted mb-0">Discover verified plots of land across Nigerian States & LGAs available for crypto purchase.</p>
+      <h1 class="font-mono text-2xl md:text-3xl font-bold text-slate-900 mb-2">
+        <i class="fa-solid fa-earth-africa text-emerald-600 mr-2"></i> Land Marketplace
+      </h1>
+      <p class="text-slate-600">
+        Discover verified plots of land across Nigerian States & LGAs available for crypto purchase.
+      </p>
     </div>
-    <div class="mt-3 mt-md-0 d-flex align-items-center gap-2">
-      <span class="badge bg-white border border-secondary text-success px-3 py-2 fs-6 shadow-sm">
-        <i class="fa-solid fa-list-check me-1"></i> {{ results_count }} Plots Found
+    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+      <span class="inline-flex items-center px-4 py-2 bg-white border border-slate-200 text-emerald-600 rounded-lg text-sm font-semibold shadow-sm">
+        <i class="fa-solid fa-list-check mr-2"></i> {{ results_count }} Plots Found
       </span>
       {% if user.is_authenticated and user.is_seller %}
-      <a href="{% url 'app:create_land' %}" class="btn btn-primary-green">
-        <i class="fa-solid fa-plus me-1"></i> List New Land Plot
+      <a href="{% url 'app:create_land' %}" class="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition text-sm whitespace-nowrap">
+        <i class="fa-solid fa-plus mr-1"></i> List New Land Plot
       </a>
       {% endif %}
     </div>
   </div>
 
-  <div class="row g-4">
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
     <!-- Filter Sidebar -->
-    <div class="col-lg-3">
-      <div class="p-3 p-md-4 rounded-4 shadow-sm" style="background: #ffffff; border: 1px solid var(--border-color); position: sticky; top: 90px;">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h5 class="text-dark font-monospace mb-0 fw-bold"><i class="fa-solid fa-sliders me-2 text-success"></i> Filter Land</h5>
-          <a href="{% url 'app:land_list' %}" class="small text-success text-decoration-none fw-bold">Reset</a>
+    <div class="lg:col-span-1">
+      <div class="bg-white border border-slate-200 rounded-lg p-4 md:p-6 shadow-sm sticky top-24">
+        <div class="flex justify-between items-center mb-4">
+          <h5 class="font-mono font-bold text-slate-900">
+            <i class="fa-solid fa-sliders text-emerald-600 mr-2"></i> Filter Land
+          </h5>
+          <a href="{% url 'app:land_list' %}" class="text-sm text-emerald-600 font-semibold hover:underline">Reset</a>
         </div>
 
-        <form method="GET" action="{% url 'app:land_list' %}">
+        <form method="GET" action="{% url 'app:land_list' %}" class="space-y-4">
           <!-- Keyword -->
-          <div class="mb-3">
-            <label class="form-label small text-muted font-monospace">KEYWORD / TITLE NO.</label>
+          <div>
+            <label class="block text-xs font-mono text-slate-600 mb-2 font-semibold">KEYWORD / TITLE NO.</label>
             {{ filter_form.q }}
           </div>
 
           <!-- Nigerian State Filter -->
-          <div class="mb-3">
-            <label class="form-label small text-muted font-monospace">NIGERIAN STATE</label>
+          <div>
+            <label class="block text-xs font-mono text-slate-600 mb-2 font-semibold">NIGERIAN STATE</label>
             {{ filter_form.state }}
           </div>
 
           <!-- LGA Filter -->
-          <div class="mb-3">
-            <label class="form-label small text-muted font-monospace">LOCAL GOVERNMENT (LGA)</label>
+          <div>
+            <label class="block text-xs font-mono text-slate-600 mb-2 font-semibold">LOCAL GOVERNMENT (LGA)</label>
             {{ filter_form.lga }}
           </div>
 
           <!-- Zoning -->
-          <div class="mb-3">
-            <label class="form-label small text-muted font-monospace">ZONING CATEGORY</label>
+          <div>
+            <label class="block text-xs font-mono text-slate-600 mb-2 font-semibold">ZONING CATEGORY</label>
             {{ filter_form.zoning }}
           </div>
 
           <!-- Crypto Currency -->
-          <div class="mb-3">
-            <label class="form-label small text-muted font-monospace">ACCEPTING CRYPTO</label>
+          <div>
+            <label class="block text-xs font-mono text-slate-600 mb-2 font-semibold">ACCEPTING CRYPTO</label>
             {{ filter_form.crypto_currency }}
           </div>
 
           <!-- Price Range (USD) -->
-          <div class="mb-3">
-            <label class="form-label small text-muted font-monospace">PRICE RANGE (USD)</label>
-            <div class="row g-2">
-              <div class="col-6">{{ filter_form.min_price }}</div>
-              <div class="col-6">{{ filter_form.max_price }}</div>
+          <div>
+            <label class="block text-xs font-mono text-slate-600 mb-2 font-semibold">PRICE RANGE (USD)</label>
+            <div class="grid grid-cols-2 gap-2">
+              {{ filter_form.min_price }}
+              {{ filter_form.max_price }}
             </div>
           </div>
 
           <!-- Minimum Size -->
-          <div class="mb-3">
-            <label class="form-label small text-muted font-monospace">MIN SIZE (SQ METERS)</label>
+          <div>
+            <label class="block text-xs font-mono text-slate-600 mb-2 font-semibold">MIN SIZE (SQ METERS)</label>
             {{ filter_form.min_size }}
           </div>
 
           <!-- Sort Order -->
-          <div class="mb-4">
-            <label class="form-label small text-muted font-monospace">SORT BY</label>
+          <div>
+            <label class="block text-xs font-mono text-slate-600 mb-2 font-semibold">SORT BY</label>
             {{ filter_form.sort }}
           </div>
 
-          <button type="submit" class="btn btn-primary-green w-100 py-2 font-monospace fw-bold">
-            <i class="fa-solid fa-filter me-1"></i> Apply Filters
+          <button type="submit" class="w-full px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition text-sm">
+            <i class="fa-solid fa-filter mr-2"></i> Apply Filters
           </button>
         </form>
+
+        <style>
+          #id_q, #id_state, #id_lga, #id_zoning, #id_crypto_currency, 
+          #id_min_price, #id_max_price, #id_min_size, #id_sort {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            background-color: #ffffff;
+            color: #1e293b;
+          }
+          #id_q:focus, #id_state:focus, #id_lga:focus, #id_zoning:focus, #id_crypto_currency:focus,
+          #id_min_price:focus, #id_max_price:focus, #id_min_size:focus, #id_sort:focus {
+            outline: none;
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+          }
+        </style>
       </div>
     </div>
 
     <!-- Properties Grid -->
-    <div class="col-lg-9">
-      <div class="row g-4">
+    <div class="lg:col-span-3">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {% for land in lands %}
-        <div class="col-md-6 col-xl-4">
-          <div class="land-card">
-            <div class="land-card-img-wrapper">
-              {% if land.featured_image %}
-              <img src="{{ land.featured_image.url }}" class="land-card-img" alt="{{ land.title }}">
-              {% else %}
-              <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80" class="land-card-img" alt="Land">
-              {% endif %}
-              <span class="zoning-badge">{{ land.get_zoning_type_display }}</span>
-              {% if land.deed_verified %}
-              <span class="deed-badge"><i class="fa-solid fa-shield-check"></i> Title Verified</span>
-              {% endif %}
-              
-              {% if user.is_authenticated %}
-              <a href="{% url 'app:toggle_save_land' land_id=land.id %}" class="save-btn {% if land.id in saved_land_ids %}active{% endif %}" title="Save Plot">
-                <i class="fa-solid fa-heart"></i>
-              </a>
-              {% endif %}
+        <div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg hover:border-emerald-300 transition h-full flex flex-col">
+          <!-- Card Image -->
+          <div class="relative h-56 bg-slate-200 overflow-hidden group">
+            {% if land.featured_image %}
+            <img src="{{ land.featured_image.url }}" class="w-full h-full object-cover group-hover:scale-105 transition" alt="{{ land.title }}">
+            {% else %}
+            <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition" alt="Land">
+            {% endif %}
+
+            <!-- Zoning Badge -->
+            <div class="absolute top-3 left-3">
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white text-emerald-700 font-mono shadow-sm border border-slate-200">
+                {{ land.get_zoning_type_display }}
+              </span>
             </div>
 
-            <div class="land-card-body">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="badge bg-light border border-secondary border-opacity-25 text-dark small">
-                  <i class="fa-solid fa-ruler-combined me-1"></i> {{ land.formatted_size_plots }}
-                </span>
-                <span class="text-success small font-monospace fw-bold" style="max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ land.parcel_id }}">
-                  <i class="fa-solid fa-file-contract"></i> {{ land.parcel_id }}
-                </span>
-              </div>
-              
-              <h3 class="land-title">
-                <a href="{% url 'app:land_detail' slug=land.slug %}" class="text-dark text-decoration-none">{{ land.title }}</a>
-              </h3>
-              <div class="land-location">
-                <i class="fa-solid fa-location-dot text-danger"></i> {{ land.location }}{% if land.lga %}, {{ land.lga }}{% endif %}{% if land.state %}, {{ land.state }}{% endif %}
-              </div>
-              
-              <div class="price-box d-flex justify-content-between align-items-center">
+            <!-- Deed Verified Badge -->
+            {% if land.deed_verified %}
+            <div class="absolute top-3 right-3">
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-600 text-white shadow-sm">
+                <i class="fa-solid fa-shield-check mr-1"></i> Title Verified
+              </span>
+            </div>
+            {% endif %}
+
+            <!-- Save Button -->
+            {% if user.is_authenticated %}
+            <button onclick="toggleSaveLand({{ land.id }}, this)" class="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-white border border-slate-300 flex items-center justify-center hover:bg-red-50 transition group/save {% if land.id in saved_land_ids %}bg-red-500 text-white border-red-500{% endif %}" title="Save Plot">
+              <i class="fa-solid fa-heart"></i>
+            </button>
+            {% endif %}
+
+            <!-- View & Size Stats -->
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-900/70 to-transparent p-3 text-white text-sm font-mono flex justify-between">
+              <span><i class="fa-solid fa-eye mr-1 text-emerald-400"></i> {{ land.views_count }} views</span>
+              <span><i class="fa-solid fa-ruler-combined mr-1 text-emerald-400"></i> {{ land.formatted_size_plots }}</span>
+            </div>
+          </div>
+
+          <!-- Card Body -->
+          <div class="p-4 flex flex-col flex-grow">
+            <!-- Title & Location -->
+            <h3 class="font-mono font-bold text-slate-900 text-base mb-2 truncate" title="{{ land.title }}">
+              <a href="{% url 'app:land_detail' slug=land.slug %}" class="text-slate-900 hover:text-emerald-600">{{ land.title }}</a>
+            </h3>
+            <div class="text-sm text-slate-600 mb-3 flex items-center gap-1">
+              <i class="fa-solid fa-location-dot text-red-600"></i>
+              <span class="truncate">
+                {{ land.location }}{% if land.lga %}, {{ land.lga }}{% endif %}{% if land.state %}, {{ land.state }}{% endif %}
+              </span>
+            </div>
+
+            <!-- Parcel Info -->
+            <div class="text-xs text-slate-600 font-mono mb-4 max-w-xs truncate" title="{{ land.parcel_id }}">
+              <i class="fa-solid fa-file-contract mr-1"></i> {{ land.parcel_id }}
+            </div>
+
+            <!-- Price Box & Action -->
+            <div class="mt-auto">
+              <div class="p-3 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between">
                 <div>
-                  <div class="crypto-price">{{ land.price_crypto }} {{ land.crypto_currency }}</div>
-                  <div class="usd-price">≈ ${{ land.price_usd|floatformat:2 }} USD</div>
+                  <div class="text-xs text-slate-600 font-mono font-semibold">PRICE</div>
+                  <div class="font-bold text-emerald-600 font-mono">{{ land.price_crypto }} {{ land.crypto_currency }}</div>
+                  <div class="text-xs text-slate-600">≈ ${{ land.price_usd|floatformat:2 }} USD</div>
                 </div>
-                <a href="{% url 'app:land_detail' slug=land.slug %}" class="btn btn-sm btn-primary-green px-3">
+                <a href="{% url 'app:land_detail' slug=land.slug %}" class="px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded hover:bg-emerald-700 transition whitespace-nowrap">
                   Inspect Plot
                 </a>
               </div>
@@ -145,12 +193,12 @@
           </div>
         </div>
         {% empty %}
-        <div class="col-12 text-center py-5">
-          <div class="p-5 rounded-4 bg-white border border-secondary border-opacity-25 shadow-sm">
-            <i class="fa-solid fa-magnifying-glass text-muted fs-1 mb-3"></i>
-            <h4 class="text-dark">No Land Listings Found</h4>
-            <p class="text-muted">Try adjusting your State, LGA, or price filters to view available plots.</p>
-            <a href="{% url 'app:land_list' %}" class="btn btn-primary-green">Reset Search Filters</a>
+        <div class="col-span-full text-center py-12">
+          <div class="p-8 rounded-lg bg-white border border-slate-200 shadow-sm">
+            <i class="fa-solid fa-magnifying-glass text-slate-400 text-4xl mb-4 block"></i>
+            <h4 class="text-slate-900 font-bold mb-2">No Land Listings Found</h4>
+            <p class="text-slate-600 mb-4">Try adjusting your State, LGA, or price filters to view available plots.</p>
+            <a href="{% url 'app:land_list' %}" class="inline-flex items-center px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition">Reset Search Filters</a>
           </div>
         </div>
         {% endfor %}

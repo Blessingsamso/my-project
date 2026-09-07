@@ -58,8 +58,8 @@
       <div class="flex items-center gap-3 md:gap-4">
         {% if user.is_authenticated %}
           <!-- Notifications Dropdown -->
-          <div class="relative group">
-            <button class="relative inline-flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-emerald-50 hover:border-emerald-300 transition focus:outline-none focus:ring-2 focus:ring-emerald-500" aria-label="Notifications">
+          <div class="relative">
+            <button class="relative inline-flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-emerald-50 hover:border-emerald-300 transition focus:outline-none focus:ring-2 focus:ring-emerald-500 notification-btn" aria-label="Notifications">
               <i class="fa-regular fa-bell text-lg"></i>
               {% if unread_notifications_count > 0 %}
               <span class="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full">
@@ -68,7 +68,7 @@
               {% endif %}
             </button>
             <!-- Dropdown Menu -->
-            <div class="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2">
+            <div class="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-lg shadow-lg opacity-0 invisible transition-all duration-200 py-2 notification-menu z-40" style="pointer-events: none;">
               <h6 class="px-4 py-2 text-sm font-bold text-emerald-600 border-b border-slate-200">Notifications</h6>
               <a href="{% url 'notifications:list' %}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition">
                 View All Notifications
@@ -77,8 +77,8 @@
           </div>
 
           <!-- User Profile Dropdown -->
-          <div class="relative group">
-            <button class="inline-flex items-center gap-2 px-3 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition focus:outline-none focus:ring-2 focus:ring-emerald-500" aria-label="User menu">
+          <div class="relative">
+            <button class="inline-flex items-center gap-2 px-3 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition focus:outline-none focus:ring-2 focus:ring-emerald-500 user-menu-btn" aria-label="User menu">
               {% if user.get_avatar_url %}
               <img src="{{ user.get_avatar_url }}" class="w-8 h-8 rounded-full object-cover" alt="Avatar">
               {% else %}
@@ -92,7 +92,7 @@
               </div>
             </button>
             <!-- Dropdown Menu -->
-            <div class="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-1">
+            <div class="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-lg shadow-lg opacity-0 invisible transition-all duration-200 py-1 user-menu z-40" style="pointer-events: none;">
               {% if user.is_admin_user %}
               <a href="{% url 'app:admin_dashboard' %}" class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-emerald-600 hover:bg-slate-50 transition">
                 <i class="fa-solid fa-user-shield"></i> Admin Panel
@@ -156,5 +156,63 @@
   document.getElementById('mobileMenuBtn').addEventListener('click', function() {
     const menu = document.getElementById('mobileMenu');
     menu.classList.toggle('hidden');
+  });
+
+  // Dropdown menus with click functionality
+  const notificationBtn = document.querySelector('.notification-btn');
+  const notificationMenu = document.querySelector('.notification-menu');
+  const userMenuBtn = document.querySelector('.user-menu-btn');
+  const userMenu = document.querySelector('.user-menu');
+
+  if (notificationBtn && notificationMenu) {
+    notificationBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      // Toggle visibility
+      const isVisible = !notificationMenu.classList.contains('opacity-0');
+      notificationMenu.classList.toggle('opacity-0', isVisible);
+      notificationMenu.classList.toggle('invisible', isVisible);
+      if (!isVisible) {
+        notificationMenu.style.pointerEvents = 'auto';
+      } else {
+        notificationMenu.style.pointerEvents = 'none';
+      }
+      // Close user menu if open
+      if (userMenu && !userMenu.classList.contains('opacity-0')) {
+        userMenu.classList.add('opacity-0', 'invisible');
+        userMenu.style.pointerEvents = 'none';
+      }
+    });
+  }
+
+  if (userMenuBtn && userMenu) {
+    userMenuBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      // Toggle visibility
+      const isVisible = !userMenu.classList.contains('opacity-0');
+      userMenu.classList.toggle('opacity-0', isVisible);
+      userMenu.classList.toggle('invisible', isVisible);
+      if (!isVisible) {
+        userMenu.style.pointerEvents = 'auto';
+      } else {
+        userMenu.style.pointerEvents = 'none';
+      }
+      // Close notification menu if open
+      if (notificationMenu && !notificationMenu.classList.contains('opacity-0')) {
+        notificationMenu.classList.add('opacity-0', 'invisible');
+        notificationMenu.style.pointerEvents = 'none';
+      }
+    });
+  }
+
+  // Close menus when clicking outside
+  document.addEventListener('click', function(e) {
+    if (notificationMenu && !notificationMenu.contains(e.target) && !notificationBtn.contains(e.target)) {
+      notificationMenu.classList.add('opacity-0', 'invisible');
+      notificationMenu.style.pointerEvents = 'none';
+    }
+    if (userMenu && !userMenu.contains(e.target) && !userMenuBtn.contains(e.target)) {
+      userMenu.classList.add('opacity-0', 'invisible');
+      userMenu.style.pointerEvents = 'none';
+    }
   });
 </script>
