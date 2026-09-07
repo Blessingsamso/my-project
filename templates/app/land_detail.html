@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ land.title }} — MyApp{% endblock %}
+{% block title %}{{ land.title }} | Land for crypto{% endblock %}
 
 {% block content %}
 <div class="container py-4">
@@ -178,7 +178,7 @@
                 <i class="fa-solid fa-wallet me-1"></i> Track Offer in Dashboard
               </a>
             {% else %}
-              <button type="button" class="btn btn-primary-green w-100 py-3 font-monospace fw-bold fs-6 mb-3" data-bs-toggle="modal" data-bs-target="#offerModal">
+              <button id="submitCryptoOfferBtn" type="button" class="btn btn-primary-green w-100 py-3 font-monospace fw-bold fs-6 mb-3">
                 <i class="fa-solid fa-cart-shopping me-2"></i> Submit Crypto Offer
               </button>
             {% endif %}
@@ -264,12 +264,15 @@ document.addEventListener('DOMContentLoaded', function() {
   const offerCryptoInput = document.getElementById('id_offer_price_crypto');
   const offerUsdInput = document.getElementById('id_offer_price_usd');
   const cryptoCurrency = "{{ land.crypto_currency }}";
+  const offerModal = document.getElementById('offerModal');
+  const offerTrigger = document.getElementById('submitCryptoOfferBtn');
 
   let exchangeRates = {
     'ETH': 3200.00,
     'SOL': 145.00,
     'BTC': 64000.00,
-    'USDT': 1.00
+    'USDT': 1.00,
+    'NGN': 0.000667
   };
 
   fetch('/api/exchange-rates/')
@@ -293,6 +296,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   if (offerCryptoInput) {
     offerCryptoInput.addEventListener('input', calculateOfferUsd);
+  }
+
+  if (offerTrigger && offerModal && window.bootstrap) {
+    offerTrigger.addEventListener('click', function() {
+      window.bootstrap.Modal.getOrCreateInstance(offerModal).show();
+    });
   }
 });
 </script>

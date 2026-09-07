@@ -14,6 +14,14 @@ from notifications.notification_services import NotificationService
 from app.utils import get_lgas_for_state, NIGERIA_STATES_AND_LGAS, get_all_rates_dict, convert_crypto_to_usd
 
 
+def _get_default_currency_for_user(user):
+    """Return the user's preferred pricing currency when available."""
+    default_wallet = user.saved_wallets.filter(is_default=True).first() or user.saved_wallets.first()
+    if default_wallet:
+        return default_wallet.currency
+    return 'ETH'
+
+
 def get_lgas_api(request):
     """API endpoint returning LGAs for a requested state in JSON."""
     state = request.GET.get('state', '').strip()
@@ -141,6 +149,10 @@ def land_detail(request, slug):
 @seller_required
 def create_land(request):
     """Seller view to create and list new land property."""
+    if not request.user.saved_wallets.exists() and not request.user.crypto_wallet_address:
+        messages.info(request, "Please add a crypto wallet in your profile before listing land.")
+        return redirect('app:profile')
+
     if request.method == 'POST':
         form = LandListingForm(request.POST, request.FILES)
         if form.is_valid():
@@ -159,7 +171,7 @@ def create_land(request):
             messages.error(request, "Failed to list property. Please check form errors below.")
     else:
         form = LandListingForm(initial={
-            'crypto_currency': request.user.preferred_currency or 'ETH',
+            'crypto_currency': _get_default_currency_for_user(request.user),
             'latitude': 30.2672,
             'longitude': -97.7431
         })

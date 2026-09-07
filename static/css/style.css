@@ -43,11 +43,17 @@ body {
 .navbar-custom {
   background: var(--glass-bg);
   border-bottom: 1px solid var(--border-color);
-  padding: 0.85rem 0;
+  padding: 0.55rem 0;
   position: sticky;
   top: 0;
-  z-index: 1040;
+  z-index: 3000;
   box-shadow: var(--shadow-sm);
+}
+
+.crypto-ticker-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2999;
 }
 
 .navbar-brand {
@@ -70,6 +76,19 @@ body {
   font-weight: 500;
 }
 
+.navbar-custom .dropdown-menu,
+.modal,
+.modal-backdrop {
+  z-index: 4000;
+}
+
+.navbar-custom .dropdown,
+.navbar-custom .btn,
+.navbar-custom .nav-link,
+.modal .btn {
+  pointer-events: auto;
+}
+
 .crypto-badge-pill {
   background: #ffffff;
   border: 1px solid #cbd5e1;
@@ -81,7 +100,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 /* Solid Premium Green Buttons */
@@ -112,7 +131,7 @@ body {
   font-weight: 600;
   border-radius: var(--radius-md);
   transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .btn-glass:hover {

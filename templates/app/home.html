@@ -1,110 +1,69 @@
-{% extends 'base.html' %} {% load static %} {% block title %}MyApp — Buy & Sell
-Verified Land with Crypto Escrow{% endblock %} {% block content %}
+{% extends 'base.html' %} {% load static %} {% block title %}Home | Land for crypto{% endblock %} {% block content %}
 <!-- Hero Section -->
-<section class="hero-section text-center">
-  <div class="container">
-    <h1 class="hero-title text-dark">
-      Buy Land with <span class="text-success">Crypto Currency</span>
-    </h1>
-    <p class="hero-subtitle mx-auto">
-      Discover, buy, and sell verified land plots in prime locations. Secure
-      escrow payments using Ethereum, Solana, Bitcoin, and USDT.
-    </p>
-
-    <!-- Quick Search Card -->
-    <div class="row justify-content-center">
-      <div class="col-lg-10">
-        <div
-          class="p-3 p-md-4 rounded-4"
-          style="
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-lg);
-          "
-        >
-          <form
-            action="{% url 'app:land_list' %}"
-            method="GET"
-            class="row g-3 text-start"
-          >
-            <div class="col-md-4">
-              <label class="form-label small text-muted font-monospace"
-                ><i class="fa-solid fa-magnifying-glass me-1"></i> SEARCH
-                LAND</label
-              >
-              <input
-                type="text"
-                name="q"
-                class="form-control form-control-lg fs-6"
-                placeholder="e.g. Lekki, Abuja, Epe, or C of O No."
-              />
-            </div>
-            <div class="col-md-3">
-              <label class="form-label small text-muted font-monospace"
-                ><i class="fa-solid fa-layer-group me-1"></i> ZONING
-                CATEGORY</label
-              >
-              <select name="zoning" class="form-select form-select-lg fs-6">
-                <option value="">All Categories</option>
-                {% for code, label in zoning_types %}
-                <option value="{{ code }}">{{ label }}</option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="col-md-3">
-              <label class="form-label small text-muted font-monospace"
-                ><i class="fa-brands fa-ethereum me-1"></i> CRYPTO
-                CURRENCY</label
-              >
-              <select
-                name="crypto_currency"
-                class="form-select form-select-lg fs-6"
-              >
-                <option value="">Any Currency</option>
-                <option value="ETH">ETH (Ethereum)</option>
-                <option value="SOL">SOL (Solana)</option>
-                <option value="BTC">BTC (Bitcoin)</option>
-                <option value="USDT">USDT (Tether)</option>
-              </select>
-            </div>
-            <div class="col-md-2 d-flex align-items-end">
-              <button
-                type="submit"
-                class="btn btn-primary-green w-100 py-3 fw-bold"
-              >
-                Search <i class="fa-solid fa-arrow-right ms-1"></i>
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
+<section class="px-4 py-16 md:py-20">
+  <div class="mx-auto max-w-7xl text-center">
+    <div class="mx-auto max-w-4xl">
+      <p class="mb-4 inline-flex items-center rounded-full bg-emerald-50 px-4 py-1 text-sm font-semibold text-emerald-700 ring-1 ring-emerald-200">
+        <i class="fa-solid fa-shield-halved me-2"></i> Verified land, crypto escrow, NGN ready
+      </p>
+      <h1 class="font-display text-4xl font-extrabold tracking-tight text-slate-950 md:text-6xl">
+        Buy Land with <span class="text-emerald-600">Crypto Currency</span>
+      </h1>
+      <p class="mx-auto mt-5 max-w-3xl text-base leading-8 text-slate-600 md:text-lg">
+        Discover, buy, and sell verified land plots in prime locations. Secure escrow payments using Ethereum, Solana, Bitcoin, USDT, and NGN.
+      </p>
     </div>
 
-    <!-- Platform Stats -->
-    <div class="row g-3 justify-content-center mt-5">
-      <div class="col-6 col-md-3">
-        <div class="stat-card">
-          <div class="stat-number">{{ stats.total_lands }}</div>
-          <div class="stat-label">Active Land Listings</div>
+    <div class="mx-auto mt-10 max-w-6xl rounded-[2rem] border border-slate-200 bg-white p-5 shadow-soft md:p-8">
+      <form action="{% url 'app:land_list' %}" method="GET" class="grid gap-4 text-left md:grid-cols-12 md:items-end">
+        <div class="md:col-span-4">
+          <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500"><i class="fa-solid fa-magnifying-glass me-1 text-emerald-600"></i> Search land</label>
+          <input type="text" name="q" class="form-control w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-900 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200" placeholder="e.g. Lekki, Abuja, Epe, or C of O No." />
         </div>
+        <div class="md:col-span-3">
+          <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500"><i class="fa-solid fa-layer-group me-1 text-emerald-600"></i> Zoning</label>
+          <select name="zoning" class="form-select w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-900 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">
+            <option value="">All Categories</option>
+            {% for code, label in zoning_types %}
+            <option value="{{ code }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="md:col-span-3">
+          <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500"><i class="fa-brands fa-ethereum me-1 text-emerald-600"></i> Currency</label>
+          <select name="crypto_currency" class="form-select w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-900 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">
+            <option value="">Any Currency</option>
+            <option value="ETH">ETH (Ethereum)</option>
+            <option value="SOL">SOL (Solana)</option>
+            <option value="BTC">BTC (Bitcoin)</option>
+            <option value="USDT">USDT (Tether)</option>
+            <option value="NGN">NGN (Naira)</option>
+          </select>
+        </div>
+        <div class="md:col-span-2">
+          <button type="submit" class="inline-flex w-full items-center justify-center rounded-2xl bg-emerald-600 px-5 py-3.5 font-semibold text-white shadow-soft transition hover:-translate-y-0.5 hover:bg-emerald-700">
+            Search <i class="fa-solid fa-arrow-right ms-2"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm">
+        <div class="text-3xl font-extrabold text-emerald-600">{{ stats.total_lands }}</div>
+        <div class="mt-1 text-sm font-semibold text-slate-500">Active Land Listings</div>
       </div>
-      <div class="col-6 col-md-3">
-        <div class="stat-card">
-          <div class="stat-number">{{ stats.verified_deeds }}</div>
-          <div class="stat-label">Verified Title Deeds</div>
-        </div>
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm">
+        <div class="text-3xl font-extrabold text-emerald-600">{{ stats.verified_deeds }}</div>
+        <div class="mt-1 text-sm font-semibold text-slate-500">Verified Title Deeds</div>
       </div>
-      <div class="col-6 col-md-3">
-        <div class="stat-card">
-          <div class="stat-number">{{ stats.total_sellers }}</div>
-          <div class="stat-label">Verified Land Sellers</div>
-        </div>
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm">
+        <div class="text-3xl font-extrabold text-emerald-600">{{ stats.total_sellers }}</div>
+        <div class="mt-1 text-sm font-semibold text-slate-500">Verified Land Sellers</div>
       </div>
-      <div class="col-6 col-md-3">
-        <div class="stat-card">
-          <div class="stat-number">{{ stats.completed_txs }}</div>
-          <div class="stat-label">Escrow Transfers</div>
-        </div>
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm">
+        <div class="text-3xl font-extrabold text-emerald-600">{{ stats.completed_txs }}</div>
+        <div class="mt-1 text-sm font-semibold text-slate-500">Escrow Transfers</div>
       </div>
     </div>
   </div>
@@ -345,7 +304,7 @@ Verified Land with Crypto Escrow{% endblock %} {% block content %}
         </h2>
         <p class="text-muted mb-4 fs-5">
           Join buyers and sellers conducting direct, secure land transactions on
-          MyApp.
+          Land for crypto.
         </p>
         <div class="d-flex flex-wrap justify-content-center gap-3">
           <a

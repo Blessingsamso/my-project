@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Browse Land Listings — MyApp{% endblock %}
+{% block title %}Browse Land Listings | Land for crypto{% endblock %}
 
 {% block content %}
 <div class="container py-4">
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       fetch(`/api/lgas/?state=${encodeURIComponent(selectedState)}`)
         .then(response => response.json())
-        .then(data => {
+        .then data => {
           filterLga.innerHTML = '<option value="">All LGAs</option>';
           data.lgas.forEach(lga => {
             const opt = document.createElement('option');

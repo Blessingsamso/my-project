@@ -63,6 +63,7 @@ class SellerWallet(models.Model):
         SOL = 'SOL', 'Solana (SOL)'
         BTC = 'BTC', 'Bitcoin (BTC)'
         USDT = 'USDT', 'Tether (USDT)'
+        NGN = 'NGN', 'Naira (NGN)'
         BNB = 'BNB', 'BNB Smart Chain (BNB)'
         MATIC = 'MATIC', 'Polygon (MATIC)'
         OTHER = 'OTHER', 'Other Crypto'
@@ -84,6 +85,7 @@ class SellerWallet(models.Model):
                 'SOL': 'Solana Wallet',
                 'BTC': 'Bitcoin Wallet',
                 'USDT': 'USDT Wallet',
+                'NGN': 'Naira Wallet',
                 'BNB': 'BNB Wallet',
                 'MATIC': 'Polygon Wallet',
                 'OTHER': 'Crypto Wallet',
@@ -121,7 +123,7 @@ class LandListing(models.Model):
     price_crypto = models.DecimalField(max_digits=18, decimal_places=6)
     crypto_currency = models.CharField(
         max_length=10,
-        choices=[('ETH', 'ETH'), ('SOL', 'SOL'), ('BTC', 'BTC'), ('USDT', 'USDT')],
+        choices=[('ETH', 'ETH'), ('SOL', 'SOL'), ('BTC', 'BTC'), ('USDT', 'USDT'), ('NGN', 'NGN')],
         default='ETH'
     )
     price_usd = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)

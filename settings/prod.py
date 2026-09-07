@@ -5,7 +5,7 @@ ALLOWED_HOSTS = ['*']
 import dj_database_url
 
 
-db_url = os.environ.get("DATABASE_URL") or os.environ.get("DB_URI")
+db_url = os.environ.get("DATABASE_URL")
 DATABASES = {
     "default": dj_database_url.config(
         default=db_url,
@@ -18,7 +18,7 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {
+        'verbose': {    
             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
             'style': '{',
         },

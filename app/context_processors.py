@@ -1,5 +1,6 @@
 from notifications.models.notification import Notification
 from app.models import Transaction, SavedListing, UserRole, LandListing
+from app.utils import get_all_rates_dict
 
 
 def crypto_land_context(request):
@@ -9,12 +10,8 @@ def crypto_land_context(request):
         'saved_lands_count': 0,
         'active_offers_count': 0,
         'pending_listings_count': 0,
-        'crypto_rates': {
-            'ETH': 3200.00,
-            'SOL': 145.00,
-            'BTC': 64000.00,
-            'USDT': 1.00,
-        }
+        'crypto_rates': get_all_rates_dict(),
+        'exchange_rates': get_all_rates_dict(),
     }
 
     if request.user.is_authenticated:

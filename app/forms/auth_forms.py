@@ -4,15 +4,19 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from app.models import User, UserRole
 
 
+TAILWIND_INPUT = 'form-control w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200'
+TAILWIND_SELECT = 'form-select w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200'
+
+
 class UserRegistrationForm(UserCreationForm):
     role = forms.ChoiceField(
         choices=[(UserRole.BUYER, 'Land Buyer'), (UserRole.SELLER, 'Land Seller')],
-        widget=forms.Select(attrs={'class': 'form-select'}),
+        widget=forms.Select(attrs={'class': TAILWIND_SELECT}),
         initial=UserRole.BUYER,
         help_text="Select whether you want to buy land or list land for sale"
     )
-    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'placeholder': 'name@example.com', 'class': 'form-control'}))
-    phone = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': '+1 (555) 000-0000', 'class': 'form-control'}))
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'placeholder': 'name@example.com', 'class': TAILWIND_INPUT}))
+    phone = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': '+1 (555) 000-0000', 'class': TAILWIND_INPUT}))
 
     class Meta(UserCreationForm.Meta):
         model = User
@@ -22,12 +26,12 @@ class UserRegistrationForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             if 'class' not in field.widget.attrs:
-                field.widget.attrs['class'] = 'form-control'
+                field.widget.attrs['class'] = TAILWIND_INPUT
 
 
 class CustomLoginForm(AuthenticationForm):
-    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username or Email'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}))
+    username = forms.CharField(widget=forms.TextInput(attrs={'class': TAILWIND_INPUT, 'placeholder': 'Username or Email'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': TAILWIND_INPUT, 'placeholder': 'Password'}))
 
     def clean(self):
         username = self.cleaned_data.get('username')

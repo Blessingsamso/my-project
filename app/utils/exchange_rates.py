@@ -11,11 +11,14 @@ from decimal import Decimal, ROUND_HALF_UP
 # 1 SOL = $145.00 USD
 # 1 BTC = $64,000.00 USD
 # 1 USDT = $1.00 USD
+# 1 USD = ₦1,500 NGN
+# 1 NGN = $0.0006667 USD
 EXCHANGE_RATES = {
     'ETH': Decimal('3200.00'),
     'SOL': Decimal('145.00'),
     'BTC': Decimal('64000.00'),
     'USDT': Decimal('1.00'),
+    'NGN': Decimal('1360.5700'),
 }
 
 

@@ -14,7 +14,7 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, f"Welcome to MyApp, {user.first_name or user.username}! Your account is active.")
+            messages.success(request, f"Welcome to Land for crypto, {user.first_name or user.username}! Your account is active.")
             if user.is_seller():
                 return redirect('app:seller_dashboard')
             return redirect('app:buyer_dashboard')
