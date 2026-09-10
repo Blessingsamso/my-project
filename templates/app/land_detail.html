@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load currency_filters %}
 
 {% block title %}{{ land.title }} | Land for crypto{% endblock %}
 
@@ -107,7 +108,7 @@
     <div class="lg:col-span-4">
       <div class="sticky top-24 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div class="text-xs font-semibold uppercase tracking-wide text-slate-500">Listing price</div>
-        <div class="mt-1 font-display text-3xl font-bold text-emerald-700">{{ land.price_crypto }} {{ land.crypto_currency }}</div>
+        <div class="mt-1 font-display text-3xl font-bold text-emerald-700">{{ land.price_crypto }} {{ land.crypto_currency }} <div class="text-lg text-slate-500 font-mono mt-1">≈ {{ land.price_naira|format_naira }}</div></div>
 
         <div class="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3">
           <div class="text-xs font-bold uppercase text-emerald-700">Escrow flow</div>
@@ -162,11 +163,12 @@
           <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
             <div class="text-xs uppercase text-slate-500">Property</div>
             <div class="font-semibold text-slate-900">{{ land.title }}</div>
-            <div class="text-sm text-slate-600">Asking: {{ land.price_crypto }} {{ land.crypto_currency }}</div>
+            <div class="text-sm text-slate-600">Asking: {{ land.price_crypto }} {{ land.crypto_currency }}<br><span class="font-mono font-bold text-slate-800">≈ {{ land.price_naira|format_naira }}</span></div>
           </div>
           <div>
             <label class="mb-1 block text-xs font-semibold uppercase text-slate-500">Your offer ({{ land.crypto_currency }})</label>
             {{ offer_form.offer_price_crypto }}
+          <div class="mt-2 text-sm text-slate-600 font-mono" id="modal_naira_equivalent">≈ ₦0.00</div>
           </div>
           {{ offer_form.offer_price_usd }}
           {{ offer_form.crypto_currency }}
@@ -188,4 +190,29 @@
   </div>
 </div>
 {% endif %}
+{% endblock %}
+<script>
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const modalOfferPrice = document.getElementById('id_offer_price_crypto');
+  const modalNairaDisplay = document.getElementById('modal_naira_equivalent');
+  const currency = '{{ land.crypto_currency }}';
+
+  if (modalOfferPrice && modalNairaDisplay) {
+      modalOfferPrice.addEventListener('input', function() {
+          const price = this.value;
+          if (price) {
+            fetch('/api/convert-crypto-to-naira/?amount=' + price + '&currency=' + currency)
+                .then(res => res.json())
+                .then(data => {
+                    modalNairaDisplay.textContent = '≈ ₦' + parseFloat(data.naira_amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                });
+          } else {
+            modalNairaDisplay.textContent = '≈ ₦0.00';
+          }
+      });
+  }
+});
+</script>
 {% endblock %}

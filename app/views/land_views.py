@@ -381,3 +381,20 @@ def convert_crypto_to_naira_api(request):
     usd_value = convert_crypto_to_usd(amount, currency)
     naira_value = usd_value * NAIRA_PER_USD
     return JsonResponse({'naira_amount': str(naira_value.quantize(Decimal('0.01')))})
+
+def convert_naira_to_crypto_api(request):
+    amount = request.GET.get('amount')
+    currency = request.GET.get('currency')
+    if not amount or not currency:
+        return JsonResponse({'crypto_amount': '0.000000'})
+    
+    # Simple division: NGN_amount / NAIRA_PER_USD = USD_value
+    # Then USD_value / crypto_rate = crypto_amount
+    from app.utils.exchange_rates import get_exchange_rate, NAIRA_PER_USD
+    
+    naira_amount = Decimal(amount)
+    usd_value = naira_amount / NAIRA_PER_USD
+    rate = get_exchange_rate(currency)
+    crypto_amount = usd_value / rate
+    
+    return JsonResponse({'crypto_amount': str(crypto_amount.quantize(Decimal('0.000001')))})

@@ -31,7 +31,7 @@
         </div>
       </div>
 
-      <div class="grid gap-4 md:grid-cols-2">
+      <div class="grid gap-4 md:grid-cols-3">
         <div>
           <label class="mb-1 block text-xs font-semibold uppercase text-slate-500">Nigerian state / FCT *</label>
           {{ form.state }}
@@ -42,7 +42,7 @@
         </div>
       </div>
 
-      <div class="grid gap-4 md:grid-cols-2">
+      <div class="grid gap-4 md:grid-cols-3">
         <div>
           <label class="mb-1 block text-xs font-semibold uppercase text-slate-500">Currency *</label>
           {{ form.crypto_currency }}
@@ -51,9 +51,9 @@
           <label class="mb-1 block text-xs font-semibold uppercase text-slate-500">Price *</label>
           {{ form.price_crypto }}
         </div>
-        <div class="md:col-span-2">
+        <div class="md:col-span-1">
            <label class="mb-1 block text-xs font-semibold uppercase text-slate-500">Naira Equivalent</label>
-           <div id="naira_equivalent" class="text-emerald-700 font-bold p-3 border rounded-2xl bg-slate-50 border-slate-200">₦0.00</div>
+           <input type="number" id="id_naira_price" step="0.01" class="form-control w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200" placeholder="0.00">
         </div>
       </div>
 
@@ -85,7 +85,7 @@
         {{ form.description }}
       </div>
 
-      <div class="grid gap-4 md:grid-cols-2">
+      <div class="grid gap-4 md:grid-cols-3">
         <div>
           <label class="mb-1 block text-xs font-semibold uppercase text-slate-500">Latitude</label>
           {{ form.latitude }}
@@ -145,7 +145,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
-</script>
 {% endblock %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -171,6 +170,81 @@ document.addEventListener('DOMContentLoaded', function() {
   if (priceInput && currencySelect) {
       priceInput.addEventListener('input', updateNaira);
       currencySelect.addEventListener('change', updateNaira);
+  }
+});
+document.addEventListener('DOMContentLoaded', function() {
+  const priceInput = document.getElementById('id_price_crypto');
+  const currencySelect = document.getElementById('id_crypto_currency');
+  const nairaInput = document.getElementById('id_naira_price');
+
+  // Helper to convert crypto to naira
+  function updateNaira() {
+    const price = priceInput.value;
+    const currency = currencySelect.value;
+    if (price && currency) {
+        fetch('/api/convert-crypto-to-naira/?amount=' + price + '&currency=' + currency)
+            .then(res => res.json())
+            .then(data => {
+                nairaInput.value = parseFloat(data.naira_amount).toFixed(2);
+            });
+    }
+  }
+
+  // Helper to convert naira to crypto (you might need a new API)
+  function updateCrypto() {
+    const naira = nairaInput.value;
+    const currency = currencySelect.value;
+    if (naira && currency) {
+        fetch('/api/convert-naira-to-crypto/?amount=' + naira + '&currency=' + currency)
+            .then(res => res.json())
+            .then(data => {
+                priceInput.value = parseFloat(data.crypto_amount).toFixed(6);
+            });
+    }
+  }
+
+  if (priceInput && currencySelect && nairaInput) {
+      priceInput.addEventListener('input', updateNaira);
+      currencySelect.addEventListener('change', updateNaira);
+      nairaInput.addEventListener('input', updateCrypto);
+  }
+});
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const priceInput = document.getElementById('id_price_crypto');
+  const currencySelect = document.getElementById('id_crypto_currency');
+  const nairaInput = document.getElementById('id_naira_price');
+
+  // Convert crypto to naira
+  function updateNaira() {
+    const price = priceInput.value;
+    const currency = currencySelect.value;
+    if (price && currency) {
+        fetch('/api/convert-crypto-to-naira/?amount=' + price + '&currency=' + currency)
+            .then(res => res.json())
+            .then(data => {
+                nairaInput.value = parseFloat(data.naira_amount).toFixed(2);
+            });
+    }
+  }
+
+  // Convert naira to crypto
+  function updateCrypto() {
+    const naira = nairaInput.value;
+    const currency = currencySelect.value;
+    if (naira && currency) {
+        fetch('/api/convert-naira-to-crypto/?amount=' + naira + '&currency=' + currency)
+            .then(res => res.json())
+            .then(data => {
+                priceInput.value = parseFloat(data.crypto_amount).toFixed(6);
+            });
+    }
+  }
+
+  if (priceInput && currencySelect && nairaInput) {
+      priceInput.addEventListener('input', updateNaira);
+      currencySelect.addEventListener('change', updateNaira);
+      nairaInput.addEventListener('input', updateCrypto);
   }
 });
 </script>
