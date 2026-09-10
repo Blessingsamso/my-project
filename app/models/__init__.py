@@ -123,10 +123,20 @@ class LandListing(models.Model):
     price_crypto = models.DecimalField(max_digits=18, decimal_places=6)
     crypto_currency = models.CharField(
         max_length=10,
-        choices=[('ETH', 'ETH'), ('SOL', 'SOL'), ('BTC', 'BTC'), ('USDT', 'USDT'), ('NGN', 'NGN')],
+        choices=[('ETH', 'ETH'), ('SOL', 'SOL'), ('BTC', 'BTC'), ('BNB', 'BNB')],
         default='ETH'
     )
     price_usd = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    price_naira = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
+
+    @property
+    def price_naira(self):
+        """Convert USD or crypto price to Naira."""
+        from app.utils.exchange_rates import NAIRA_PER_USD
+        from decimal import Decimal
+        if self.price_usd:
+            return (self.price_usd * NAIRA_PER_USD).quantize(Decimal('0.01'))
+        return Decimal('0.00')
     
     size_sqm = models.DecimalField(max_digits=12, decimal_places=2, help_text="Land Area in Square Meters (Sqm)")
     size_acres = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Size in Acres/Hectares")
@@ -225,6 +235,15 @@ class Transaction(models.Model):
     offer_price_crypto = models.DecimalField(max_digits=18, decimal_places=6)
     crypto_currency = models.CharField(max_length=10, default='ETH')
     offer_price_usd = models.DecimalField(max_digits=12, decimal_places=2)
+
+    @property
+    def offer_price_naira(self):
+        """Convert transaction offer price in USD/crypto to Naira."""
+        from app.utils.exchange_rates import NAIRA_PER_USD
+        from decimal import Decimal
+        if self.offer_price_usd:
+            return (self.offer_price_usd * NAIRA_PER_USD).quantize(Decimal('0.01'))
+        return Decimal('0.00')
     
     buyer_wallet_address = models.CharField(max_length=128)
     seller_wallet_address = models.CharField(max_length=128, blank=True)

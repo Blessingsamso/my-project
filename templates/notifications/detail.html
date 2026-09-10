@@ -1,43 +1,21 @@
-{% extends 'base.html' %} {% load static %} {% block title %}{{ notification.title }} | Land for crypto{% endblock %} {% block content %}
-<div class="container py-5 max-w-700 mx-auto">
-  <div
-    class="p-4 p-md-5 rounded-4"
-    style="background: var(--bg-card); border: 1px solid var(--border-color)"
-  >
-    <div class="d-flex align-items-center justify-content-between mb-3">
-      <span class="badge bg-cyan text-dark font-monospace text-uppercase"
-        >{{ notification.get_category_display }}</span
-      >
-      <span class="small text-muted font-monospace"
-        >{{ notification.created_at|date:"M d, Y H:i" }}</span
-      >
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ notification.title }} | Land for crypto{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-2xl px-4 py-12">
+  <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
+    <div class="mb-4 flex items-center justify-between gap-3">
+      <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase text-emerald-700">{{ notification.get_category_display }}</span>
+      <span class="text-xs text-slate-500">{{ notification.created_at|date:"M d, Y H:i" }}</span>
     </div>
-
-    <h3 class="font-monospace text-white fw-bold mb-3">
-      {{ notification.title }}
-    </h3>
-    <p class="text-light leading-relaxed mb-4 fs-6">
-      {{ notification.message }}
-    </p>
-
-    <div
-      class="pt-3 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center"
-    >
-      <a href="{% url 'notifications:list' %}" class="btn btn-glass btn-sm">
-        <i class="fa-solid fa-arrow-left me-1"></i> Back to Notifications
-      </a>
+    <h3 class="font-display text-2xl font-bold text-slate-900">{{ notification.title }}</h3>
+    <p class="mt-3 text-slate-600">{{ notification.message }}</p>
+    <div class="mt-6 flex items-center justify-between border-t border-slate-200 pt-4">
+      <a href="{% url 'notifications:list' %}" class="text-sm font-semibold text-slate-700 hover:text-emerald-700">Back</a>
       {% if user.is_buyer %}
-      <a
-        href="{% url 'app:buyer_dashboard' %}"
-        class="btn btn-primary-gradient btn-sm"
-        >Go to Dashboard</a
-      >
+      <a href="{% url 'app:buyer_dashboard' %}" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">Dashboard</a>
       {% elif user.is_seller %}
-      <a
-        href="{% url 'app:seller_dashboard' %}"
-        class="btn btn-primary-gradient btn-sm"
-        >Go to Seller Hub</a
-      >
+      <a href="{% url 'app:seller_dashboard' %}" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">Seller hub</a>
       {% endif %}
     </div>
   </div>

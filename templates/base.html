@@ -1,12 +1,11 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="light" class="scroll-smooth">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Home | Land for crypto{% endblock %}</title>
 
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -37,73 +36,47 @@
       },
     };
   </script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- FontAwesome Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-  <style>
-    /* Tailwind-friendly form styling */
-    .form-control, .form-select {
-      width: 100%;
-      padding: 0.5rem 0.75rem;
-      border: 1px solid #e2e8f0;
-      border-radius: 0.5rem;
-      font-size: 0.875rem;
-      background-color: #ffffff;
-      color: #1e293b;
-    }
-    .form-control:focus, .form-select:focus {
-      outline: none;
-      border-color: #059669;
-      box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
-    }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      transition: all 0.2s ease;
-      text-decoration: none;
-      cursor: pointer;
+  <style type="text/tailwindcss">
+    @layer components {
+      .form-control, .form-select {
+        @apply w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm;
+      }
+      .form-control:focus, .form-select:focus {
+        @apply border-emerald-500 outline-none ring-2 ring-emerald-200;
+      }
     }
   </style>
 
   {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-slate-50 font-sans text-slate-900 antialiased">
+<body class="flex min-h-screen flex-col bg-slate-50 font-sans text-slate-900 antialiased">
 
   {% include 'navbar.html' %}
 
-  <!-- Messages / Flash Alerts -->
-  <div class="container mt-3">
+  <div class="mx-auto w-full max-w-7xl px-4 pt-4">
     {% if messages %}
       {% for message in messages %}
-        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show border-0 shadow-md text-dark" role="alert" style="background-color: #ffffff; border-left: 4px solid var(--primary-green) !important;">
-          <i class="fa-solid fa-circle-info me-2 text-success"></i> {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="mb-3 flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+          <i class="fa-solid fa-circle-info mt-0.5 text-emerald-600"></i>
+          <p class="text-sm text-slate-800">{{ message }}</p>
         </div>
       {% endfor %}
     {% endif %}
   </div>
 
-  <!-- Main Body Content -->
-  <main class="flex-grow-1">
+  <main class="flex-1">
     {% block content %}{% endblock %}
   </main>
 
-  <!-- Footer -->
-  <footer>
+  <footer class="mt-auto">
     {% include 'footer.html' %}
-    </footer>
+  </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    {% block extra_js %}{% endblock %}
-
-  </body>
-  </html>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,49 +1,6 @@
-<div class="container">
-    <div class="row g-4">
-      <div class="col-lg-4">
-        <a class="navbar-brand mb-3" href="{% url 'app:home' %}">
-          <i class="fa-solid fa-cubes-stacked text-success"></i> MyApp
-        </a>
-        <p class="small text-muted mb-3">
-          The premier crypto land marketplace. Buy, sell, and escrow verified land parcels using Ethereum, Solana, Bitcoin, and USDT.
-        </p>
-        <div class="d-flex gap-3">
-          <a href="#" class="text-muted"><i class="fa-brands fa-twitter fs-5"></i></a>
-          <a href="#" class="text-muted"><i class="fa-brands fa-discord fs-5"></i></a>
-          <a href="#" class="text-muted"><i class="fa-brands fa-github fs-5"></i></a>
-          <a href="#" class="text-muted"><i class="fa-brands fa-telegram fs-5"></i></a>
-        </div>
-      </div>
-      <div class="col-lg-2 col-6">
-        <h6 class="text-dark mb-3 font-monospace fw-bold">MARKETPLACE</h6>
-        <ul class="list-unstyled small d-flex flex-column gap-2">
-          <li><a href="{% url 'app:land_list' %}" class="text-muted text-decoration-none">All Land Listings</a></li>
-          <li><a href="{% url 'app:land_list' %}?zoning=residential" class="text-muted text-decoration-none">Residential Plots</a></li>
-          <li><a href="{% url 'app:land_list' %}?zoning=commercial" class="text-muted text-decoration-none">Commercial Sites</a></li>
-          <li><a href="{% url 'app:land_list' %}?zoning=agricultural" class="text-muted text-decoration-none">Agricultural Acres</a></li>
-        </ul>
-      </div>
-      <div class="col-lg-2 col-6">
-        <h6 class="text-dark mb-3 font-monospace fw-bold">ROLES</h6>
-        <ul class="list-unstyled small d-flex flex-column gap-2">
-          <li><a href="{% url 'app:register' %}?role=buyer" class="text-muted text-decoration-none">Register as Buyer</a></li>
-          <li><a href="{% url 'app:register' %}?role=seller" class="text-muted text-decoration-none">List Land as Seller</a></li>
-          <li><a href="{% url 'app:login' %}" class="text-muted text-decoration-none">Account Login</a></li>
-        </ul>
-      </div>
-      <div class="col-lg-4">
-        <h6 class="text-dark mb-3 font-monospace fw-bold">ESCROW SAFETY</h6>
-        <p class="small text-muted mb-2">
-          Property transactions utilize secure escrow payments. Title deeds are verified with official land registry records before release.
-        </p>
-        <div class="p-2 rounded bg-light border border-secondary border-opacity-25 small font-monospace text-success fw-semibold">
-          <i class="fa-solid fa-lock me-1"></i> Escrow Address: 0x71C7...976F
-        </div>
-      </div>
-    </div>
-    <hr class="my-4 border-secondary border-opacity-25">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small text-muted">
-      <div>&copy; 2026 MyApp. All rights reserved.</div>
-      <div>Crypto Real Estate Marketplace.</div>
-    </div>
+<div class="border-t border-slate-200 bg-white">
+  <div class="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 text-center text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:text-left">
+    <p>College research project on land listings and crypto escrow.</p>
+    <p>&copy; 2026 Land for crypto</p>
   </div>
+</div>

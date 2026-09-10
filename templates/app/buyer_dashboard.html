@@ -1,3 +1,4 @@
+{% load currency_filters %}
 {% extends 'base.html' %}
 {% load static %}
 
@@ -71,7 +72,7 @@
             </td>
             <td class="px-4 py-4">
               <div class="font-bold text-emerald-600 font-mono">{{ tx.offer_price_crypto }} {{ tx.crypto_currency }}</div>
-              <div class="text-xs text-slate-600">≈ ${{ tx.offer_price_usd|floatformat:2 }} USD</div>
+              <div class="text-xs text-slate-500 font-mono">≈ {{ tx.offer_price_naira|format_naira }}</div>
             </td>
             <td class="px-4 py-4">
               <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
@@ -112,7 +113,7 @@
                         {% csrf_token %}
                         <div class="modal-body">
                           <p class="text-sm text-slate-600 mb-4">
-                            Please send <strong>{{ tx.offer_price_crypto }} {{ tx.crypto_currency }}</strong> to the official platform Escrow Wallet Address below:
+                            Please send <strong>{{ tx.offer_price_crypto }} {{ tx.crypto_currency }}</strong> (≈ <strong>{{ tx.offer_price_naira|format_naira }}</strong>) to the official platform Escrow Wallet Address below:
                           </p>
 
                           <div class="p-4 rounded-lg bg-emerald-50 border border-emerald-300 mb-4">
@@ -164,21 +165,10 @@
 
   <!-- Saved Lands Grid -->
   {% if saved_lands %}
-  <h4 class="font-monospace text-dark fw-bold mb-3"><i class="fa-solid fa-heart text-pink me-2"></i> Saved Wishlist Lands</h4>
-  <div class="row g-4 mb-5">
+  <h4 class="mb-4 font-display text-xl font-bold text-slate-900"><i class="fa-solid fa-heart mr-2 text-pink-500"></i> Saved listings</h4>
+  <div class="mb-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
     {% for item in saved_lands %}
-    <div class="col-md-4">
-      <div class="land-card">
-        <div class="land-card-body">
-          <h5 class="land-title"><a href="{% url 'app:land_detail' slug=item.land.slug %}" class="text-dark text-decoration-none">{{ item.land.title }}</a></h5>
-          <div class="land-location small"><i class="fa-solid fa-location-dot text-danger"></i> {{ item.land.location }}</div>
-          <div class="price-box d-flex justify-content-between align-items-center mt-3">
-            <div class="crypto-price fs-6">{{ item.land.price_crypto }} {{ item.land.crypto_currency }}</div>
-            <a href="{% url 'app:land_detail' slug=item.land.slug %}" class="btn btn-sm btn-glass">Inspect</a>
-          </div>
-        </div>
-      </div>
-    </div>
+    {% include 'app/includes/land_card.html' with land=item.land %}
     {% endfor %}
   </div>
   {% endif %}

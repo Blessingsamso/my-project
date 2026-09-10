@@ -1,8 +1,6 @@
 from django import forms
-from decimal import Decimal, ROUND_HALF_UP
-from app.models import LandListing, Transaction, ZoningType, LandImage
-from app.utils import get_state_choices, get_lgas_for_state, convert_crypto_to_usd, convert_usd_to_crypto, EXCHANGE_RATES
-from app.utils.exchange_rates import NAIRA_PER_USD
+from app.models import LandListing, Transaction, ZoningType
+from app.utils import get_state_choices, get_lgas_for_state, convert_crypto_to_usd
 
 
 TAILWIND_INPUT = 'form-control w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200'
@@ -27,14 +25,7 @@ class LandListingForm(forms.ModelForm):
     )
     price_usd = forms.DecimalField(
         required=False,
-        widget=forms.NumberInput(attrs={
-            'class': TAILWIND_INPUT + ' bg-slate-50',
-            'id': 'id_price_usd',
-            'readonly': 'readonly',
-            'step': '0.01',
-            'placeholder': 'Calculated automatically'
-        }),
-        help_text="Auto-calculated USD/USDT value based on exchange rates"
+        widget=forms.HiddenInput(attrs={'id': 'id_price_usd'}),
     )
 
     class Meta:
@@ -90,7 +81,7 @@ class LandListingForm(forms.ModelForm):
 
 
 class LandFilterForm(forms.Form):
-    q = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Search area, keyword, or Title Doc / Survey No...'}))
+    q = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': TAILWIND_INPUT, 'placeholder': 'Search area, keyword, or Title Doc / Survey No...'}))
     state = forms.ChoiceField(
         required=False,
         choices=[('', 'All States')] + get_state_choices(),
@@ -107,18 +98,18 @@ class LandFilterForm(forms.Form):
     )
     crypto_currency = forms.ChoiceField(
         required=False,
-        choices=[('', 'All Crypto')] + [('ETH', 'ETH'), ('SOL', 'SOL'), ('BTC', 'BTC'), ('USDT', 'USDT'), ('NGN', 'NGN')],
+        choices=[('', 'All Crypto')] + [('ETH', 'ETH'), ('SOL', 'SOL'), ('BTC', 'BTC'), ('BNB', 'BNB')],
         widget=forms.Select(attrs={'class': TAILWIND_SELECT})
     )
-    min_price = forms.DecimalField(required=False, widget=forms.NumberInput(attrs={'class': TAILWIND_INPUT, 'placeholder': 'Min USD'}))
-    max_price = forms.DecimalField(required=False, widget=forms.NumberInput(attrs={'class': TAILWIND_INPUT, 'placeholder': 'Max USD'}))
+    min_price = forms.DecimalField(required=False, widget=forms.NumberInput(attrs={'class': TAILWIND_INPUT, 'placeholder': 'Min'}))
+    max_price = forms.DecimalField(required=False, widget=forms.NumberInput(attrs={'class': TAILWIND_INPUT, 'placeholder': 'Max'}))
     min_size = forms.DecimalField(required=False, widget=forms.NumberInput(attrs={'class': TAILWIND_INPUT, 'placeholder': 'Min Sqm'}))
     sort = forms.ChoiceField(
         required=False,
         choices=[
             ('-created_at', 'Newest First'),
-            ('price_usd', 'Price: Low to High'),
-            ('-price_usd', 'Price: High to Low'),
+            ('price_crypto', 'Price: Low to High'),
+            ('-price_crypto', 'Price: High to Low'),
             ('-size_sqm', 'Largest Land Area'),
         ],
         widget=forms.Select(attrs={'class': TAILWIND_SELECT})
@@ -142,49 +133,36 @@ class LandFilterForm(forms.Form):
 
 class SubmitOfferForm(forms.ModelForm):
     offer_price_crypto = forms.DecimalField(
-        required=False,
-        widget=forms.HiddenInput(attrs={
-            'id': 'id_offer_price_crypto',
-        }),
-    )
-
-    offer_price_ngn = forms.DecimalField(
-        required=False,
+        required=True,
         widget=forms.NumberInput(attrs={
             'class': TAILWIND_INPUT,
-            'id': 'id_offer_price_ngn',
-            'step': '0.01',
-            'placeholder': 'Calculated automatically'
+            'id': 'id_offer_price_crypto',
+            'step': '0.000001',
+            'placeholder': 'Offer amount',
         }),
-        help_text="Offer value in Naira (NGN). USDT is shown for comparison only."
     )
 
     offer_price_usd = forms.DecimalField(
         required=False,
-        widget=forms.HiddenInput(attrs={
-            'id': 'id_offer_price_usd',
-        }),
-        help_text="Internal USD reference value"
+        widget=forms.HiddenInput(attrs={'id': 'id_offer_price_usd'}),
     )
 
     class Meta:
         model = Transaction
         fields = ['crypto_currency', 'offer_price_crypto', 'offer_price_usd', 'buyer_wallet_address', 'notes']
         widgets = {
-            'crypto_currency': forms.TextInput(attrs={'class': TAILWIND_INPUT + ' bg-slate-50', 'id': 'id_offer_crypto_currency', 'readonly': 'readonly'}),
+            'crypto_currency': forms.HiddenInput(attrs={'id': 'id_offer_crypto_currency'}),
             'buyer_wallet_address': forms.TextInput(attrs={'class': TAILWIND_INPUT, 'placeholder': '0x... your wallet address'}),
-            'notes': forms.Textarea(attrs={'class': TAILWIND_INPUT, 'rows': 3, 'placeholder': 'Optional offer message to land seller or escrow preferences...'}),
+            'notes': forms.Textarea(attrs={'class': TAILWIND_INPUT, 'rows': 3, 'placeholder': 'Optional note for the seller...'}),
         }
 
     def clean(self):
         cleaned_data = super().clean()
-        offer_price_ngn = cleaned_data.get('offer_price_ngn')
+        offer_price_crypto = cleaned_data.get('offer_price_crypto')
         crypto_currency = cleaned_data.get('crypto_currency')
 
-        if offer_price_ngn and crypto_currency:
-            usd_equivalent = offer_price_ngn / NAIRA_PER_USD
-            cleaned_data['offer_price_usd'] = usd_equivalent.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
-            cleaned_data['offer_price_crypto'] = convert_usd_to_crypto(usd_equivalent, crypto_currency)
+        if offer_price_crypto and crypto_currency:
+            cleaned_data['offer_price_usd'] = convert_crypto_to_usd(offer_price_crypto, crypto_currency)
         return cleaned_data
 
 

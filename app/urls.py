@@ -14,6 +14,7 @@ urlpatterns = [
     # Land Catalogue & Management
     path('api/lgas/', views.get_lgas_api, name='get_lgas_api'),
     path('api/exchange-rates/', views.get_exchange_rates_api, name='get_exchange_rates_api'),
+    path("api/convert-crypto-to-naira/", views.convert_crypto_to_naira_api, name="convert_crypto_to_naira"),
     path('lands/', views.land_list, name='land_list'),
     path('lands/create/', views.create_land, name='create_land'),
     path('lands/<slug:slug>/', views.land_detail, name='land_detail'),

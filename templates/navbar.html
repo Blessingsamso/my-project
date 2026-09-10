@@ -1,218 +1,252 @@
-<!-- Crypto Live Market Rates Ticker Bar -->
-<div class="bg-emerald-950 text-emerald-50 border-b border-emerald-900">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-      <div class="flex items-center gap-3 overflow-x-auto pb-2 md:pb-0">
-        <span class="inline-flex items-center rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-200 ring-1 ring-emerald-400/30 flex-shrink-0">
-          <i class="fa-solid fa-chart-line mr-1"></i> LIVE RATES:
-        </span>
-        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-100 flex-shrink-0">
-          <i class="fa-brands fa-ethereum text-blue-300"></i> ETH: ${{ crypto_rates.ETH|floatformat:2 }}
-        </span>
-        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-100 flex-shrink-0">
-          <i class="fa-solid fa-bolt text-amber-300"></i> SOL: ${{ crypto_rates.SOL|floatformat:2 }}
-        </span>
-        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-100 flex-shrink-0">
-          <i class="fa-brands fa-bitcoin text-amber-300"></i> BTC: ${{ crypto_rates.BTC|floatformat:2 }}
-        </span>
-        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-100 flex-shrink-0">
-          <i class="fa-solid fa-dollar-sign text-emerald-300"></i> USDT: $1.00
-        </span>
-        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-100 flex-shrink-0">
-          <i class="fa-solid fa-naira-sign text-emerald-300"></i> 1 USD = ₦{{ naira_per_usd|floatformat:0 }}
-        </span>
-      </div>
-      <div class="hidden md:flex items-center text-xs font-semibold text-emerald-200">
-        <i class="fa-solid fa-shield-halved text-green-600 mr-1"></i> Verified Escrow Protected
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Navbar -->
-<nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center h-16">
+<nav class="sticky top-0 z-50 border-b border-slate-200 bg-white">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="flex h-16 items-center justify-between">
       
-      <!-- Logo -->
-      <div class="flex-shrink-0">
-        <a href="{% url 'app:home' %}" class="flex items-center gap-2 text-xl font-bold text-slate-900 hover:text-emerald-600 transition">
-          <i class="fa-solid fa-cubes-stacked text-emerald-600"></i>
-          <span class="hidden sm:inline">Land for crypto</span>
-        </a>
-      </div>
+      <!-- Brand Logo -->
+      <a href="{% url 'app:home' %}" class="flex items-center gap-2 text-xl font-bold text-slate-900 transition hover:text-emerald-600">
+        <i class="fa-solid fa-cubes-stacked text-emerald-600"></i>
+        <span>Land for crypto</span>
+      </a>
 
-      <!-- Desktop Navigation -->
-      <div class="hidden md:flex items-center gap-8">
-        <a href="{% url 'app:land_list' %}" class="flex items-center gap-2 text-slate-700 hover:text-emerald-600 font-semibold transition">
+      <!-- Desktop Navigation (hidden on mobile) -->
+      <div class="hidden items-center gap-8 md:flex">
+        <a href="{% url 'app:land_list' %}" class="flex items-center gap-2 font-semibold text-slate-700 transition hover:text-emerald-600">
           <i class="fa-solid fa-map-location-dot text-emerald-600"></i> Browse Listings
         </a>
         {% if user.is_authenticated and user.is_seller %}
-        <a href="{% url 'app:create_land' %}" class="flex items-center gap-2 text-amber-600 hover:text-amber-700 font-bold transition">
+        <a href="{% url 'app:create_land' %}" class="flex items-center gap-2 font-bold text-amber-600 transition hover:text-amber-700">
           <i class="fa-solid fa-plus-circle"></i> List Land
         </a>
         {% endif %}
       </div>
 
-      <!-- Right Side Actions -->
-      <div class="flex items-center gap-3 md:gap-4">
+      <!-- Desktop Action Buttons / User Dropdowns (hidden on mobile) -->
+      <div class="hidden items-center gap-3 md:flex md:gap-4">
         {% if user.is_authenticated %}
           <!-- Notifications Dropdown -->
           <div class="relative">
-            <button class="relative inline-flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-emerald-50 hover:border-emerald-300 transition focus:outline-none focus:ring-2 focus:ring-emerald-500 notification-btn" aria-label="Notifications">
+            <button class="notification-btn relative inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition hover:border-emerald-300 hover:bg-emerald-50" aria-label="Notifications">
               <i class="fa-regular fa-bell text-lg"></i>
               {% if unread_notifications_count > 0 %}
-              <span class="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full">
+              <span class="absolute right-0 top-0 inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
                 {{ unread_notifications_count }}
               </span>
               {% endif %}
             </button>
-            <!-- Dropdown Menu -->
-            <div class="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-lg shadow-lg opacity-0 invisible transition-all duration-200 py-2 notification-menu z-40" style="pointer-events: none;">
-              <h6 class="px-4 py-2 text-sm font-bold text-emerald-600 border-b border-slate-200">Notifications</h6>
-              <a href="{% url 'notifications:list' %}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition">
+            <div class="notification-menu invisible absolute right-0 z-40 mt-2 w-64 rounded-lg border border-slate-200 bg-white py-2 opacity-0 shadow-lg transition-all duration-200" style="pointer-events: none;">
+              <h6 class="border-b border-slate-200 px-4 py-2 text-sm font-bold text-emerald-600">Notifications</h6>
+              <a href="{% url 'notifications:list' %}" class="block px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50">
                 View All Notifications
               </a>
             </div>
           </div>
 
-          <!-- User Profile Dropdown -->
+          <!-- User Dropdown -->
           <div class="relative">
-            <button class="inline-flex items-center gap-2 px-3 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition focus:outline-none focus:ring-2 focus:ring-emerald-500 user-menu-btn" aria-label="User menu">
+            <button class="user-menu-btn inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1 transition hover:bg-slate-50" aria-label="User menu">
               {% if user.get_avatar_url %}
-              <img src="{{ user.get_avatar_url }}" class="w-8 h-8 rounded-full object-cover" alt="Avatar">
+              <img src="{{ user.get_avatar_url }}" class="h-8 w-8 rounded-full object-cover" alt="Avatar">
               {% else %}
-              <div class="w-8 h-8 rounded-full bg-emerald-600 text-white font-bold text-sm flex items-center justify-center">
+              <div class="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white">
                 {{ user.username|slice:":1"|upper }}
               </div>
               {% endif %}
-              <div class="hidden lg:flex flex-col items-start">
+              <div class="hidden flex-col items-start lg:flex">
                 <span class="text-sm font-semibold text-slate-900">{{ user.first_name|default:user.username }}</span>
-                <span class="text-xs font-medium text-slate-500 uppercase">{{ user.get_role_display }}</span>
+                <span class="text-xs font-medium uppercase text-slate-500">{{ user.get_role_display }}</span>
               </div>
             </button>
-            <!-- Dropdown Menu -->
-            <div class="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-lg shadow-lg opacity-0 invisible transition-all duration-200 py-1 user-menu z-40" style="pointer-events: none;">
+            <div class="user-menu invisible absolute right-0 z-40 mt-2 w-56 rounded-lg border border-slate-200 bg-white py-1 opacity-0 shadow-lg transition-all duration-200" style="pointer-events: none;">
               {% if user.is_admin_user %}
-              <a href="{% url 'app:admin_dashboard' %}" class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-emerald-600 hover:bg-slate-50 transition">
+              <a href="{% url 'app:admin_dashboard' %}" class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-emerald-600 transition hover:bg-slate-50">
                 <i class="fa-solid fa-user-shield"></i> Admin Panel
               </a>
               {% endif %}
               {% if user.is_seller %}
-              <a href="{% url 'app:seller_dashboard' %}" class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition">
+              <a href="{% url 'app:seller_dashboard' %}" class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                 <i class="fa-solid fa-store"></i> Seller Hub
               </a>
               {% endif %}
               {% if user.is_buyer %}
-              <a href="{% url 'app:buyer_dashboard' %}" class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition">
+              <a href="{% url 'app:buyer_dashboard' %}" class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                 <i class="fa-solid fa-wallet"></i> Buyer Dashboard
               </a>
               {% endif %}
-              <a href="{% url 'app:profile' %}" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition">
+              <a href="{% url 'app:profile' %}" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-50">
                 <i class="fa-solid fa-user-gear"></i> Profile & Wallet
               </a>
               <hr class="my-1 border-slate-200">
-              <a href="{% url 'app:logout' %}" class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 transition">
+              <a href="{% url 'app:logout' %}" class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50">
                 <i class="fa-solid fa-right-from-bracket"></i> Logout
               </a>
             </div>
           </div>
-
         {% else %}
-          <!-- Auth Buttons -->
-          <a href="{% url 'app:login' %}" class="px-4 py-2 text-sm font-semibold text-slate-700 border border-slate-200 bg-white rounded-lg hover:bg-slate-50 hover:border-emerald-300 transition">
+          <a href="{% url 'app:login' %}" class="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-emerald-300 hover:bg-slate-50">
             Log In
           </a>
-          <a href="{% url 'app:register' %}" class="px-4 py-2 text-sm font-semibold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition shadow-sm">
-            Get Started
+          <a href="{% url 'app:register' %}" class="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700">
+            Register
           </a>
         {% endif %}
       </div>
 
-      <!-- Mobile Menu Button -->
-      <button class="md:hidden ml-4 p-2 rounded-lg text-slate-700 hover:bg-slate-100 transition focus:outline-none" id="mobileMenuBtn" aria-label="Menu">
-        <i class="fa-solid fa-bars text-xl"></i>
-      </button>
+      <!-- Mobile Right Section (Hamburger button) -->
+      <div class="flex items-center gap-2 md:hidden">
+        <button class="rounded-lg p-2 text-slate-700 transition hover:bg-slate-100" id="mobileMenuBtn" aria-label="Menu" aria-expanded="false">
+          <i class="fa-solid fa-bars text-xl" id="mobileMenuIcon"></i>
+        </button>
+      </div>
+
     </div>
 
-    <!-- Mobile Navigation -->
-    <div id="mobileMenu" class="hidden md:hidden border-t border-slate-200 py-4">
-      <div class="flex flex-col gap-3">
-        <a href="{% url 'app:land_list' %}" class="flex items-center gap-2 px-4 py-2 text-slate-700 hover:bg-slate-50 rounded-lg transition">
-          <i class="fa-solid fa-map-location-dot text-emerald-600"></i> Browse Listings
-        </a>
-        {% if user.is_authenticated and user.is_seller %}
-        <a href="{% url 'app:create_land' %}" class="flex items-center gap-2 px-4 py-2 text-amber-600 font-bold hover:bg-slate-50 rounded-lg transition">
-          <i class="fa-solid fa-plus-circle"></i> List Land
-        </a>
+    <!-- Mobile Collapsible Menu (hidden on desktop) -->
+    <div id="mobileMenu" class="hidden border-t border-slate-100 pb-6 pt-3 md:hidden">
+      <div class="flex flex-col gap-4">
+        
+        <!-- Standard Links -->
+        <div class="flex flex-col gap-1">
+          <a href="{% url 'app:land_list' %}" class="flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium text-slate-700 transition hover:bg-slate-50 hover:text-emerald-600">
+            <i class="fa-solid fa-map-location-dot text-lg text-emerald-600"></i> Browse Listings
+          </a>
+          {% if user.is_authenticated and user.is_seller %}
+          <a href="{% url 'app:create_land' %}" class="flex items-center gap-3 rounded-lg px-4 py-3 text-base font-bold text-amber-600 transition hover:bg-amber-50">
+            <i class="fa-solid fa-plus-circle text-lg"></i> List Land
+          </a>
+          {% endif %}
+        </div>
+
+        <hr class="border-slate-100">
+
+        {% if user.is_authenticated %}
+          <!-- User Profile Header -->
+          <div class="px-4 py-2">
+            <div class="flex items-center gap-3">
+              {% if user.get_avatar_url %}
+              <img src="{{ user.get_avatar_url }}" class="h-10 w-10 rounded-full object-cover" alt="Avatar">
+              {% else %}
+              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-600 text-base font-bold text-white">
+                {{ user.username|slice:":1"|upper }}
+              </div>
+              {% endif %}
+              <div class="flex flex-col">
+                <span class="text-base font-semibold text-slate-900">{{ user.first_name|default:user.username }}</span>
+                <span class="text-xs font-medium uppercase text-slate-500">{{ user.get_role_display }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- User Menu Links for Mobile -->
+          <div class="flex flex-col gap-1">
+            {% if user.is_admin_user %}
+            <a href="{% url 'app:admin_dashboard' %}" class="flex items-center gap-3 rounded-lg px-4 py-3 text-base font-semibold text-emerald-600 transition hover:bg-slate-50">
+              <i class="fa-solid fa-user-shield text-lg"></i> Admin Panel
+            </a>
+            {% endif %}
+            {% if user.is_seller %}
+            <a href="{% url 'app:seller_dashboard' %}" class="flex items-center gap-3 rounded-lg px-4 py-3 text-base font-semibold text-slate-700 transition hover:bg-slate-50">
+              <i class="fa-solid fa-store text-lg"></i> Seller Hub
+            </a>
+            {% endif %}
+            {% if user.is_buyer %}
+            <a href="{% url 'app:buyer_dashboard' %}" class="flex items-center gap-3 rounded-lg px-4 py-3 text-base font-semibold text-slate-700 transition hover:bg-slate-50">
+              <i class="fa-solid fa-wallet text-lg"></i> Buyer Dashboard
+            </a>
+            {% endif %}
+            <a href="{% url 'app:profile' %}" class="flex items-center gap-3 rounded-lg px-4 py-3 text-base text-slate-700 transition hover:bg-slate-50">
+              <i class="fa-solid fa-user-gear text-lg"></i> Profile & Wallet
+            </a>
+            
+            <!-- Mobile Notifications Link -->
+            <a href="{% url 'notifications:list' %}" class="flex items-center justify-between rounded-lg px-4 py-3 text-base text-slate-700 transition hover:bg-slate-50">
+              <span class="flex items-center gap-3">
+                <i class="fa-regular fa-bell text-lg text-slate-500"></i> Notifications
+              </span>
+              {% if unread_notifications_count > 0 %}
+              <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+                {{ unread_notifications_count }}
+              </span>
+              {% endif %}
+            </a>
+            
+            <hr class="my-2 border-slate-100">
+            
+            <a href="{% url 'app:logout' %}" class="flex items-center gap-3 rounded-lg px-4 py-3 text-base font-semibold text-red-600 transition hover:bg-red-50">
+              <i class="fa-solid fa-right-from-bracket text-lg"></i> Logout
+            </a>
+          </div>
+        {% else %}
+          <!-- Unauthenticated Action Buttons -->
+          <div class="grid grid-cols-2 gap-3 px-4 pt-2">
+            <a href="{% url 'app:login' %}" class="flex h-11 items-center justify-center rounded-lg border border-slate-200 bg-white text-center text-base font-semibold text-slate-700 transition hover:border-emerald-300 hover:bg-slate-50">
+              Log In
+            </a>
+            <a href="{% url 'app:register' %}" class="flex h-11 items-center justify-center rounded-lg bg-emerald-600 text-center text-base font-semibold text-white shadow-sm transition hover:bg-emerald-700">
+              Register
+            </a>
+          </div>
         {% endif %}
+
       </div>
     </div>
   </div>
 </nav>
 
 <script>
-  // Mobile menu toggle
-  document.getElementById('mobileMenuBtn').addEventListener('click', function() {
-    const menu = document.getElementById('mobileMenu');
-    menu.classList.toggle('hidden');
-  });
+  // Mobile menu functionality
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const mobileMenuIcon = document.getElementById('mobileMenuIcon');
 
-  // Dropdown menus with click functionality
+  if (mobileMenuBtn && mobileMenu && mobileMenuIcon) {
+    mobileMenuBtn.addEventListener('click', function() {
+      const isHidden = mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden');
+      mobileMenuBtn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+      
+      if (isHidden) {
+        mobileMenuIcon.classList.remove('fa-bars');
+        mobileMenuIcon.classList.add('fa-xmark');
+      } else {
+        mobileMenuIcon.classList.remove('fa-xmark');
+        mobileMenuIcon.classList.add('fa-bars');
+      }
+    });
+  }
+
+  // Desktop dropdown menus
   const notificationBtn = document.querySelector('.notification-btn');
   const notificationMenu = document.querySelector('.notification-menu');
   const userMenuBtn = document.querySelector('.user-menu-btn');
   const userMenu = document.querySelector('.user-menu');
 
-  if (notificationBtn && notificationMenu) {
-    notificationBtn.addEventListener('click', function(e) {
+  function closeMenu(menu) {
+    if (!menu) return;
+    menu.classList.add('opacity-0', 'invisible');
+    menu.style.pointerEvents = 'none';
+  }
+
+  function toggleMenu(btn, menu, otherMenu) {
+    if (!btn || !menu) return;
+    btn.addEventListener('click', function(e) {
       e.stopPropagation();
-      // Toggle visibility
-      const isVisible = !notificationMenu.classList.contains('opacity-0');
-      notificationMenu.classList.toggle('opacity-0', isVisible);
-      notificationMenu.classList.toggle('invisible', isVisible);
-      if (!isVisible) {
-        notificationMenu.style.pointerEvents = 'auto';
-      } else {
-        notificationMenu.style.pointerEvents = 'none';
-      }
-      // Close user menu if open
-      if (userMenu && !userMenu.classList.contains('opacity-0')) {
-        userMenu.classList.add('opacity-0', 'invisible');
-        userMenu.style.pointerEvents = 'none';
-      }
+      const isVisible = !menu.classList.contains('opacity-0');
+      menu.classList.toggle('opacity-0', isVisible);
+      menu.classList.toggle('invisible', isVisible);
+      menu.style.pointerEvents = isVisible ? 'none' : 'auto';
+      closeMenu(otherMenu);
     });
   }
 
-  if (userMenuBtn && userMenu) {
-    userMenuBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      // Toggle visibility
-      const isVisible = !userMenu.classList.contains('opacity-0');
-      userMenu.classList.toggle('opacity-0', isVisible);
-      userMenu.classList.toggle('invisible', isVisible);
-      if (!isVisible) {
-        userMenu.style.pointerEvents = 'auto';
-      } else {
-        userMenu.style.pointerEvents = 'none';
-      }
-      // Close notification menu if open
-      if (notificationMenu && !notificationMenu.classList.contains('opacity-0')) {
-        notificationMenu.classList.add('opacity-0', 'invisible');
-        notificationMenu.style.pointerEvents = 'none';
-      }
-    });
-  }
+  toggleMenu(notificationBtn, notificationMenu, userMenu);
+  toggleMenu(userMenuBtn, userMenu, notificationMenu);
 
-  // Close menus when clicking outside
   document.addEventListener('click', function(e) {
-    if (notificationMenu && !notificationMenu.contains(e.target) && !notificationBtn.contains(e.target)) {
-      notificationMenu.classList.add('opacity-0', 'invisible');
-      notificationMenu.style.pointerEvents = 'none';
+    if (notificationMenu && notificationBtn && !notificationMenu.contains(e.target) && !notificationBtn.contains(e.target)) {
+      closeMenu(notificationMenu);
     }
-    if (userMenu && !userMenu.contains(e.target) && !userMenuBtn.contains(e.target)) {
-      userMenu.classList.add('opacity-0', 'invisible');
-      userMenu.style.pointerEvents = 'none';
+    if (userMenu && userMenuBtn && !userMenu.contains(e.target) && !userMenuBtn.contains(e.target)) {
+      closeMenu(userMenu);
     }
   });
 </script>

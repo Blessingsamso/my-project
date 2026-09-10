@@ -12,7 +12,6 @@ from notifications.notification_services import NotificationService
 
 
 from app.utils import get_lgas_for_state, NIGERIA_STATES_AND_LGAS, get_all_rates_dict, convert_crypto_to_usd
-from app.utils.exchange_rates import NAIRA_PER_USD
 
 
 def _get_default_currency_for_user(user):
@@ -83,11 +82,11 @@ def land_list(request):
             
         min_price = form.cleaned_data.get('min_price')
         if min_price:
-            queryset = queryset.filter(price_usd__gte=min_price)
+            queryset = queryset.filter(price_crypto__gte=min_price)
             
         max_price = form.cleaned_data.get('max_price')
         if max_price:
-            queryset = queryset.filter(price_usd__lte=max_price)
+            queryset = queryset.filter(price_crypto__lte=max_price)
             
         min_size = form.cleaned_data.get('min_size')
         if min_size:
@@ -123,34 +122,23 @@ def land_detail(request, slug):
 
     is_saved = False
     existing_offer = None
-    existing_offer_ngn = None
     if request.user.is_authenticated:
         is_saved = SavedListing.objects.filter(user=request.user, land=land).exists()
         if request.user.is_buyer():
             existing_offer = Transaction.objects.filter(buyer=request.user, land=land).order_by('-created_at').first()
-            if existing_offer:
-                existing_offer_ngn = (existing_offer.offer_price_usd or 0) * NAIRA_PER_USD
 
     offer_form = SubmitOfferForm(initial={
         'offer_price_crypto': land.price_crypto,
         'crypto_currency': land.crypto_currency,
-        'offer_price_usd': land.price_usd,
-        'offer_price_ngn': (land.price_usd or 0) * NAIRA_PER_USD,
         'buyer_wallet_address': request.user.crypto_wallet_address if request.user.is_authenticated else '',
     })
-
-    land_price_ngn = (land.price_usd or 0) * NAIRA_PER_USD
-    land_crypto_usd_rate = convert_crypto_to_usd(1, land.crypto_currency)
 
     payment_form = CryptoPaymentTxForm()
 
     context = {
         'land': land,
-        'land_price_ngn': land_price_ngn,
-        'land_crypto_usd_rate': land_crypto_usd_rate,
         'is_saved': is_saved,
         'existing_offer': existing_offer,
-        'existing_offer_ngn': existing_offer_ngn,
         'offer_form': offer_form,
         'payment_form': payment_form,
     }
@@ -246,7 +234,7 @@ def submit_offer(request, slug):
                 recipient=land.seller,
                 actor=request.user,
                 title=f"New Crypto Offer on {land.title}",
-                message=f"{request.user.first_name or request.user.username} offered {tx.offer_price_crypto} {tx.crypto_currency} (~${tx.offer_price_usd:,.2f}) for your land.",
+                message=f"{request.user.first_name or request.user.username} offered {tx.offer_price_crypto} {tx.crypto_currency} for your land.",
                 target_obj=tx,
                 category='offer_received',
                 type='info'
@@ -380,3 +368,16 @@ def seller_dashboard(request):
         'sold_count': my_listings.filter(status=LandListing.Status.SOLD).count(),
     }
     return render(request, 'app/seller_dashboard.html', context)
+from django.http import JsonResponse
+from decimal import Decimal
+from app.utils.exchange_rates import convert_crypto_to_usd, NAIRA_PER_USD
+
+def convert_crypto_to_naira_api(request):
+    amount = request.GET.get('amount')
+    currency = request.GET.get('currency')
+    if not amount or not currency:
+        return JsonResponse({'naira_amount': '0.00'})
+    
+    usd_value = convert_crypto_to_usd(amount, currency)
+    naira_value = usd_value * NAIRA_PER_USD
+    return JsonResponse({'naira_amount': str(naira_value.quantize(Decimal('0.01')))})

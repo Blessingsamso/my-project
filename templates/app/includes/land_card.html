@@ -1,0 +1,52 @@
+{% load currency_filters %}
+<article class="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-emerald-300 hover:shadow-lg">
+  <div class="relative h-56 overflow-hidden bg-slate-200 group">
+    {% if land.featured_image %}
+    <img src="{{ land.featured_image.url }}" class="h-full w-full object-cover transition duration-300 group-hover:scale-105" alt="{{ land.title }}">
+    {% else %}
+    <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80" class="h-full w-full object-cover transition duration-300 group-hover:scale-105" alt="Land">
+    {% endif %}
+
+    <span class="absolute left-3 top-3 inline-flex items-center rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-emerald-700 shadow-sm">
+      {{ land.get_zoning_type_display }}
+    </span>
+    {% if land.deed_verified %}
+    <span class="absolute right-3 top-3 inline-flex items-center rounded-full bg-emerald-600 px-2.5 py-1 text-[11px] font-semibold text-white shadow-sm">
+      <i class="fa-solid fa-shield-check mr-1"></i> Title Verified
+    </span>
+    {% endif %}
+    {% if show_save and user.is_authenticated %}
+    <a href="{% url 'app:toggle_save_land' land_id=land.id %}" class="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-500 transition hover:bg-red-50 {% if land.id in saved_land_ids %}border-red-500 bg-red-500 text-white{% endif %}" title="Save Plot">
+      <i class="fa-solid fa-heart"></i>
+    </a>
+    {% endif %}
+  </div>
+
+  <div class="flex flex-grow flex-col p-4">
+    <div class="mb-2 flex items-center justify-between gap-2 text-xs">
+      <span class="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-2 py-1 font-medium text-slate-700">
+        <i class="fa-solid fa-ruler-combined mr-1 text-emerald-600"></i> {{ land.formatted_size_plots }}
+      </span>
+      <span class="truncate font-mono font-semibold text-emerald-700" title="{{ land.parcel_id }}">
+        <i class="fa-solid fa-file-contract"></i> {{ land.parcel_id }}
+      </span>
+    </div>
+    <h3 class="mb-1 truncate font-display text-lg font-bold text-slate-900" title="{{ land.title }}">
+      <a href="{% url 'app:land_detail' slug=land.slug %}" class="hover:text-emerald-700">{{ land.title }}</a>
+    </h3>
+    <p class="mb-4 flex items-center gap-1 truncate text-sm text-slate-600">
+      <i class="fa-solid fa-location-dot text-red-500"></i>
+      <span class="truncate">{{ land.location }}{% if land.lga %}, {{ land.lga }}{% endif %}{% if land.state %}, {{ land.state }}{% endif %}</span>
+    </p>
+    <div class="mt-auto flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+      <div>
+        <div class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Price</div>
+        <div class="font-display text-lg font-bold text-emerald-700">{{ land.price_crypto }} {{ land.crypto_currency }}</div>
+        <div class="text-xs font-semibold text-slate-500">≈ {{ land.price_naira|format_naira }}</div>
+      </div>
+      <a href="{% url 'app:land_detail' slug=land.slug %}" class="inline-flex items-center rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700">
+        Inspect Plot
+      </a>
+    </div>
+  </div>
+</article>

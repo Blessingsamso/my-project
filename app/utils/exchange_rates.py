@@ -17,11 +17,12 @@ EXCHANGE_RATES = {
     'ETH': Decimal('3200.00'),
     'SOL': Decimal('145.00'),
     'BTC': Decimal('64000.00'),
+    'BNB': Decimal('580.00'),
     'USDT': Decimal('1.00'),
-    'NGN': Decimal('0.0007326'),
+    'NGN': Decimal('0.00074074'), # 1 / 1350
 }
 
-NAIRA_PER_USD = Decimal('1365.00')
+NAIRA_PER_USD = Decimal('1350.00')
 
 
 def get_exchange_rate(crypto_currency: str) -> Decimal:

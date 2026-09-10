@@ -1,19 +1,14 @@
 from notifications.models.notification import Notification
-from app.models import Transaction, SavedListing, UserRole, LandListing
-from app.utils import get_all_rates_dict
-from app.utils.exchange_rates import NAIRA_PER_USD
+from app.models import Transaction, SavedListing, LandListing
 
 
 def crypto_land_context(request):
-    """Context processor to inject crypto rates, unread notifications, and user stats across templates."""
+    """Inject unread notifications and role stats across templates."""
     context = {
         'unread_notifications_count': 0,
         'saved_lands_count': 0,
         'active_offers_count': 0,
         'pending_listings_count': 0,
-        'crypto_rates': get_all_rates_dict(),
-        'exchange_rates': get_all_rates_dict(),
-        'naira_per_usd': NAIRA_PER_USD,
     }
 
     if request.user.is_authenticated:

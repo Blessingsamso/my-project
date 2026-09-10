@@ -40,6 +40,7 @@
 
         <form method="GET" action="{% url 'app:land_list' %}" class="space-y-4">
           <!-- Keyword -->
+          <!-- Keyword -->
           <div>
             <label class="block text-xs font-mono text-slate-600 mb-2 font-semibold">KEYWORD / TITLE NO.</label>
             {{ filter_form.q }}
@@ -69,9 +70,8 @@
             {{ filter_form.crypto_currency }}
           </div>
 
-          <!-- Price Range (USD) -->
           <div>
-            <label class="block text-xs font-mono text-slate-600 mb-2 font-semibold">PRICE RANGE (USD)</label>
+            <label class="block text-xs font-mono text-slate-600 mb-2 font-semibold">PRICE RANGE (LISTED AMOUNT)</label>
             <div class="grid grid-cols-2 gap-2">
               {{ filter_form.min_price }}
               {{ filter_form.max_price }}
@@ -94,25 +94,6 @@
             <i class="fa-solid fa-filter mr-2"></i> Apply Filters
           </button>
         </form>
-
-        <style>
-          #id_q, #id_state, #id_lga, #id_zoning, #id_crypto_currency, 
-          #id_min_price, #id_max_price, #id_min_size, #id_sort {
-            width: 100%;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            background-color: #ffffff;
-            color: #1e293b;
-          }
-          #id_q:focus, #id_state:focus, #id_lga:focus, #id_zoning:focus, #id_crypto_currency:focus,
-          #id_min_price:focus, #id_max_price:focus, #id_min_size:focus, #id_sort:focus {
-            outline: none;
-            border-color: #059669;
-            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
-          }
-        </style>
       </div>
     </div>
 
@@ -120,78 +101,7 @@
     <div class="lg:col-span-3">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {% for land in lands %}
-        <div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm hover:shadow-lg hover:border-emerald-300 transition h-full flex flex-col">
-          <!-- Card Image -->
-          <div class="relative h-56 bg-slate-200 overflow-hidden group">
-            {% if land.featured_image %}
-            <img src="{{ land.featured_image.url }}" class="w-full h-full object-cover group-hover:scale-105 transition" alt="{{ land.title }}">
-            {% else %}
-            <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition" alt="Land">
-            {% endif %}
-
-            <!-- Zoning Badge -->
-            <div class="absolute top-3 left-3">
-              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white text-emerald-700 font-mono shadow-sm border border-slate-200">
-                {{ land.get_zoning_type_display }}
-              </span>
-            </div>
-
-            <!-- Deed Verified Badge -->
-            {% if land.deed_verified %}
-            <div class="absolute top-3 right-3">
-              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-600 text-white shadow-sm">
-                <i class="fa-solid fa-shield-check mr-1"></i> Title Verified
-              </span>
-            </div>
-            {% endif %}
-
-            <!-- Save Button -->
-            {% if user.is_authenticated %}
-            <button onclick="toggleSaveLand({{ land.id }}, this)" class="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-white border border-slate-300 flex items-center justify-center hover:bg-red-50 transition group/save {% if land.id in saved_land_ids %}bg-red-500 text-white border-red-500{% endif %}" title="Save Plot">
-              <i class="fa-solid fa-heart"></i>
-            </button>
-            {% endif %}
-
-            <!-- View & Size Stats -->
-            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-900/70 to-transparent p-3 text-white text-sm font-mono flex justify-between">
-              <span><i class="fa-solid fa-eye mr-1 text-emerald-400"></i> {{ land.views_count }} views</span>
-              <span><i class="fa-solid fa-ruler-combined mr-1 text-emerald-400"></i> {{ land.formatted_size_plots }}</span>
-            </div>
-          </div>
-
-          <!-- Card Body -->
-          <div class="p-4 flex flex-col flex-grow">
-            <!-- Title & Location -->
-            <h3 class="font-mono font-bold text-slate-900 text-base mb-2 truncate" title="{{ land.title }}">
-              <a href="{% url 'app:land_detail' slug=land.slug %}" class="text-slate-900 hover:text-emerald-600">{{ land.title }}</a>
-            </h3>
-            <div class="text-sm text-slate-600 mb-3 flex items-center gap-1">
-              <i class="fa-solid fa-location-dot text-red-600"></i>
-              <span class="truncate">
-                {{ land.location }}{% if land.lga %}, {{ land.lga }}{% endif %}{% if land.state %}, {{ land.state }}{% endif %}
-              </span>
-            </div>
-
-            <!-- Parcel Info -->
-            <div class="text-xs text-slate-600 font-mono mb-4 max-w-xs truncate" title="{{ land.parcel_id }}">
-              <i class="fa-solid fa-file-contract mr-1"></i> {{ land.parcel_id }}
-            </div>
-
-            <!-- Price Box & Action -->
-            <div class="mt-auto">
-              <div class="p-3 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between">
-                <div>
-                  <div class="text-xs text-slate-600 font-mono font-semibold">PRICE</div>
-                  <div class="font-bold text-emerald-600 font-mono">{{ land.price_crypto }} {{ land.crypto_currency }}</div>
-                  <div class="text-xs text-slate-600">≈ ${{ land.price_usd|floatformat:2 }} USD</div>
-                </div>
-                <a href="{% url 'app:land_detail' slug=land.slug %}" class="px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded hover:bg-emerald-700 transition whitespace-nowrap">
-                  Inspect Plot
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+        {% include 'app/includes/land_card.html' with show_save=True %}
         {% empty %}
         <div class="col-span-full text-center py-12">
           <div class="p-8 rounded-lg bg-white border border-slate-200 shadow-sm">
@@ -226,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       fetch(`/api/lgas/?state=${encodeURIComponent(selectedState)}`)
         .then(response => response.json())
-        .then data => {
+        .then(data => {
           filterLga.innerHTML = '<option value="">All LGAs</option>';
           data.lgas.forEach(lga => {
             const opt = document.createElement('option');
