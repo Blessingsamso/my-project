@@ -144,9 +144,9 @@
         <div class="small text-muted font-monospace mb-1"><i class="fa-solid fa-tag text-success me-1"></i> LISTING PRICE</div>
         
         <div class="d-flex align-items-baseline gap-2 mb-1">
-          <span class="crypto-price fs-2">{{ land.price_crypto }} {{ land.crypto_currency }}</span>
+          <span class="crypto-price fs-2">₦{{ land_price_ngn|floatformat:2 }}</span>
         </div>
-        <div class="usd-price fs-6 mb-4">≈ ${{ land.price_usd|floatformat:2 }} USD</div>
+        <div class="usd-price fs-6 mb-4">USDT reference: ≈ ${{ land.price_usd|floatformat:2 }} USDT</div>
 
         <div class="p-3 rounded-3 mb-4" style="background: #ecfdf5; border: 1px solid #a7f3d0;">
           <div class="small text-success font-monospace mb-1 fw-bold"><i class="fa-solid fa-shield-halved me-1"></i> ESCROW PROTECTED</div>
@@ -171,20 +171,22 @@
             {% if existing_offer %}
               <div class="alert alert-info border-0 text-dark p-3 rounded mb-3" style="background: #f1f5f9;">
                 <div class="fw-bold font-monospace mb-1"><i class="fa-solid fa-clock-history me-1"></i> Your Active Offer</div>
-                <div class="small mb-1">Price: {{ existing_offer.offer_price_crypto }} {{ existing_offer.crypto_currency }}</div>
+                <div class="small mb-1">Price: ₦{{ existing_offer_ngn|floatformat:2 }}</div>
+                <div class="small mb-1 text-muted">USDT reference: ≈ ${{ existing_offer.offer_price_usd|floatformat:2 }} USDT</div>
+                <div class="small mb-1 text-muted">Crypto comparison: {{ existing_offer.offer_price_crypto }} {{ existing_offer.crypto_currency }}</div>
                 <div class="small">Status: <span class="badge badge-status status-{{ existing_offer.status }}">{{ existing_offer.get_status_display }}</span></div>
               </div>
-              <a href="{% url 'app:buyer_dashboard' %}" class="btn btn-primary-green w-100 py-3 font-monospace fw-bold mb-3">
+              <a href="{% url 'app:buyer_dashboard' %}" class="inline-flex w-full items-center justify-center rounded-lg bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 mb-3">
                 <i class="fa-solid fa-wallet me-1"></i> Track Offer in Dashboard
               </a>
             {% else %}
-              <button type="button" class="btn btn-primary-green w-100 py-3 font-monospace fw-bold fs-6 mb-3" data-bs-toggle="modal" data-bs-target="#offerModal">
+              <button type="button" class="inline-flex w-full items-center justify-center rounded-lg bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 mb-3" data-bs-toggle="modal" data-bs-target="#offerModal">
                 <i class="fa-solid fa-cart-shopping me-2"></i> Submit Crypto Offer
               </button>
             {% endif %}
 
             <!-- Save Bookmark Button -->
-            <a href="{% url 'app:toggle_save_land' land_id=land.id %}" class="btn btn-glass w-100 py-2 font-monospace">
+            <a href="{% url 'app:toggle_save_land' land_id=land.id %}" class="inline-flex w-full items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
               {% if is_saved %}
               <i class="fa-solid fa-heart text-pink me-1"></i> Saved to Favorites
               {% else %}
@@ -195,10 +197,10 @@
 
         {% else %}
           <!-- Unauthenticated Call to Action -->
-          <a href="{% url 'app:login' %}?next={{ request.path }}" class="btn btn-primary-green w-100 py-3 font-monospace fw-bold mb-2">
+          <a href="{% url 'app:login' %}?next={{ request.path }}" class="inline-flex w-full items-center justify-center rounded-lg bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 mb-2">
             Log In to Buy Land with Crypto
           </a>
-          <a href="{% url 'app:register' %}?role=buyer" class="btn btn-glass w-100 py-2 font-monospace text-center">
+          <a href="{% url 'app:register' %}?role=buyer" class="inline-flex w-full items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 text-center">
             Create Buyer Account
           </a>
         {% endif %}
@@ -213,25 +215,36 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content bg-white text-dark border border-secondary border-opacity-30 rounded-4 shadow-lg">
       <div class="modal-header border-secondary border-opacity-25">
-        <h5 class="modal-title font-monospace fw-bold text-dark"><i class="fa-solid fa-coins text-success me-2"></i> Submit Crypto Land Offer</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title font-semibold text-slate-900"><i class="fa-solid fa-coins text-emerald-600 me-2"></i> Submit Crypto Land Offer</h5>
+        <button type="button" class="rounded-full p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500" data-bs-dismiss="modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </div>
       <form action="{% url 'app:submit_offer' slug=land.slug %}" method="POST">
         {% csrf_token %}
         <div class="modal-body">
-          <div class="p-3 rounded bg-light mb-3 border border-secondary border-opacity-25">
+            <div class="p-3 rounded bg-light mb-3 border border-secondary border-opacity-25">
             <div class="small text-muted font-monospace">PROPERTY</div>
             <div class="fw-bold text-success">{{ land.title }}</div>
-            <div class="small text-muted">Asking Price: {{ land.price_crypto }} {{ land.crypto_currency }} (~${{ land.price_usd|floatformat:2 }})</div>
+            <div class="small text-muted">Asking Price: ₦{{ land_price_ngn|floatformat:2 }}</div>
+            <div class="small text-muted">USDT reference: {{ land.price_crypto }} {{ land.crypto_currency }} (~${{ land.price_usd|floatformat:2 }})</div>
           </div>
 
           <div class="mb-3">
-            <label class="form-label font-monospace small">YOUR OFFER PRICE ({{ land.crypto_currency }})</label>
+            <label class="form-label font-monospace small">YOUR OFFER PRICE (NGN)</label>
+            {{ offer_form.offer_price_ngn }}
+            <div class="form-text small text-muted">USDT comparison only: 1 USDT ≈ ₦{{ naira_per_usd|floatformat:0 }}.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label font-monospace small">USDT / CRYPTO REFERENCE</label>
+            <div class="p-3 rounded border border-secondary border-opacity-25 bg-white">
+              <div class="small text-muted mb-1">Equivalent crypto amount</div>
+              <div class="fw-bold text-success" id="offerCryptoPreview">—</div>
+              <div class="small text-muted mt-2">Equivalent USDT value</div>
+              <div class="fw-bold text-dark" id="offerUsdtPreview">—</div>
+            </div>
             {{ offer_form.offer_price_crypto }}
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label font-monospace small">ESTIMATED USD VALUE ($)</label>
             {{ offer_form.offer_price_usd }}
           </div>
 
@@ -248,8 +261,8 @@
           <input type="hidden" name="crypto_currency" value="{{ land.crypto_currency }}">
         </div>
         <div class="modal-footer border-secondary border-opacity-25">
-          <button type="button" class="btn btn-glass" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary-green fw-bold">Submit Binding Offer</button>
+          <button type="button" class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="inline-flex items-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">Submit Binding Offer</button>
         </div>
       </form>
     </div>
@@ -261,47 +274,41 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const offerCryptoInput = document.getElementById('id_offer_price_crypto');
+  const offerNgnInput = document.getElementById('id_offer_price_ngn');
   const offerUsdInput = document.getElementById('id_offer_price_usd');
+  const offerCryptoPreview = document.getElementById('offerCryptoPreview');
+  const offerUsdtPreview = document.getElementById('offerUsdtPreview');
   const cryptoCurrency = "{{ land.crypto_currency }}";
-  const offerModal = document.getElementById('offerModal');
-  const offerTrigger = document.getElementById('submitCryptoOfferBtn');
+  const nairaPerUsd = Number("{{ naira_per_usd|floatformat:0 }}") || 1365;
+  const cryptoUsdRate = Number("{{ land_crypto_usd_rate|floatformat:2 }}") || 1;
 
-  let exchangeRates = {
-    'ETH': 3200.00,
-    'SOL': 145.00,
-    'BTC': 64000.00,
-    'USDT': 1.00,
-    'NGN': 0.000667
-  };
+  function calculateOfferReference() {
+    if (!offerNgnInput) return;
+    const nairaVal = parseFloat(offerNgnInput.value);
+    if (isNaN(nairaVal) || nairaVal <= 0) {
+      if (offerCryptoPreview) offerCryptoPreview.textContent = '—';
+      if (offerUsdtPreview) offerUsdtPreview.textContent = '—';
+      return;
+    }
 
-  fetch('/api/exchange-rates/')
-    .then(r => r.json())
-    .then(d => {
-      if (d.rates) {
-        exchangeRates = d.rates;
-        calculateOfferUsd();
-      }
-    });
+    const usdtEquivalent = nairaVal / nairaPerUsd;
+    const cryptoEquivalent = nairaVal / (nairaPerUsd * cryptoUsdRate);
 
-  function calculateOfferUsd() {
-    if (!offerCryptoInput || !offerUsdInput) return;
-    const cryptoVal = parseFloat(offerCryptoInput.value);
-    const rate = exchangeRates[cryptoCurrency] || 1.0;
+    if (offerCryptoPreview) {
+      offerCryptoPreview.textContent = `${cryptoEquivalent.toFixed(6)} ${cryptoCurrency}`;
+    }
+    if (offerUsdtPreview) {
+      offerUsdtPreview.textContent = `$${usdtEquivalent.toFixed(2)} USDT`;
+    }
 
-    if (!isNaN(cryptoVal) && cryptoVal > 0) {
-      offerUsdInput.value = (cryptoVal * rate).toFixed(2);
+    if (offerUsdInput) {
+      offerUsdInput.value = usdtEquivalent.toFixed(2);
     }
   }
 
-  if (offerCryptoInput) {
-    offerCryptoInput.addEventListener('input', calculateOfferUsd);
-  }
-
-  if (offerTrigger && offerModal && window.bootstrap) {
-    offerTrigger.addEventListener('click', function() {
-      window.bootstrap.Modal.getOrCreateInstance(offerModal).show();
-    });
+  if (offerNgnInput) {
+    offerNgnInput.addEventListener('input', calculateOfferReference);
+    calculateOfferReference();
   }
 });
 </script>

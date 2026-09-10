@@ -1,6 +1,8 @@
 from django import forms
+from decimal import Decimal, ROUND_HALF_UP
 from app.models import LandListing, Transaction, ZoningType, LandImage
-from app.utils import get_state_choices, get_lgas_for_state, convert_crypto_to_usd, EXCHANGE_RATES
+from app.utils import get_state_choices, get_lgas_for_state, convert_crypto_to_usd, convert_usd_to_crypto, EXCHANGE_RATES
+from app.utils.exchange_rates import NAIRA_PER_USD
 
 
 TAILWIND_INPUT = 'form-control w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200'
@@ -139,16 +141,30 @@ class LandFilterForm(forms.Form):
 
 
 class SubmitOfferForm(forms.ModelForm):
-    offer_price_usd = forms.DecimalField(
+    offer_price_crypto = forms.DecimalField(
+        required=False,
+        widget=forms.HiddenInput(attrs={
+            'id': 'id_offer_price_crypto',
+        }),
+    )
+
+    offer_price_ngn = forms.DecimalField(
         required=False,
         widget=forms.NumberInput(attrs={
-            'class': TAILWIND_INPUT + ' bg-slate-50',
-            'id': 'id_offer_price_usd',
-            'readonly': 'readonly',
+            'class': TAILWIND_INPUT,
+            'id': 'id_offer_price_ngn',
             'step': '0.01',
             'placeholder': 'Calculated automatically'
         }),
-        help_text="Auto-calculated USD/USDT valuation"
+        help_text="Offer value in Naira (NGN). USDT is shown for comparison only."
+    )
+
+    offer_price_usd = forms.DecimalField(
+        required=False,
+        widget=forms.HiddenInput(attrs={
+            'id': 'id_offer_price_usd',
+        }),
+        help_text="Internal USD reference value"
     )
 
     class Meta:
@@ -156,18 +172,19 @@ class SubmitOfferForm(forms.ModelForm):
         fields = ['crypto_currency', 'offer_price_crypto', 'offer_price_usd', 'buyer_wallet_address', 'notes']
         widgets = {
             'crypto_currency': forms.TextInput(attrs={'class': TAILWIND_INPUT + ' bg-slate-50', 'id': 'id_offer_crypto_currency', 'readonly': 'readonly'}),
-            'offer_price_crypto': forms.NumberInput(attrs={'class': TAILWIND_INPUT, 'id': 'id_offer_price_crypto', 'step': '0.000001'}),
             'buyer_wallet_address': forms.TextInput(attrs={'class': TAILWIND_INPUT, 'placeholder': '0x... your wallet address'}),
             'notes': forms.Textarea(attrs={'class': TAILWIND_INPUT, 'rows': 3, 'placeholder': 'Optional offer message to land seller or escrow preferences...'}),
         }
 
     def clean(self):
         cleaned_data = super().clean()
-        offer_price_crypto = cleaned_data.get('offer_price_crypto')
+        offer_price_ngn = cleaned_data.get('offer_price_ngn')
         crypto_currency = cleaned_data.get('crypto_currency')
 
-        if offer_price_crypto and crypto_currency:
-            cleaned_data['offer_price_usd'] = convert_crypto_to_usd(offer_price_crypto, crypto_currency)
+        if offer_price_ngn and crypto_currency:
+            usd_equivalent = offer_price_ngn / NAIRA_PER_USD
+            cleaned_data['offer_price_usd'] = usd_equivalent.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+            cleaned_data['offer_price_crypto'] = convert_usd_to_crypto(usd_equivalent, crypto_currency)
         return cleaned_data
 
 

@@ -76,10 +76,25 @@ body {
   font-weight: 500;
 }
 
-.navbar-custom .dropdown-menu,
-.modal,
-.modal-backdrop {
+.navbar-custom .dropdown-menu {
   z-index: 4000;
+}
+
+.modal {
+  z-index: 3000;
+}
+
+.modal-backdrop {
+  z-index: 2990;
+}
+
+.modal-backdrop.show {
+  opacity: 0.18 !important;
+}
+
+.modal-content {
+  background-color: #ffffff !important;
+  opacity: 1 !important;
 }
 
 .navbar-custom .dropdown,

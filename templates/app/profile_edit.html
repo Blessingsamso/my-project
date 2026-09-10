@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <button type="button" class="btn btn-primary-green fw-bold px-4 py-2 font-monospace shadow-sm" data-bs-toggle="modal" data-bs-target="#addWalletModal">
+      <button type="button" class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2" data-bs-toggle="modal" data-bs-target="#addWalletModal">
         <i class="fa-solid fa-plus-circle me-1"></i> Add Wallet Address
       </button>
     </div>
@@ -66,7 +66,7 @@
                   {% csrf_token %}
                   <input type="hidden" name="action" value="set_default_wallet">
                   <input type="hidden" name="wallet_id" value="{{ wallet.id }}">
-                  <button type="submit" class="btn btn-sm btn-outline-success font-monospace py-1 px-2" style="font-size: 0.75rem;">
+                  <button type="submit" class="inline-flex items-center rounded-md border border-emerald-600 px-3 py-1 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
                     Set Default
                   </button>
                 </form>
@@ -76,7 +76,7 @@
                   {% csrf_token %}
                   <input type="hidden" name="action" value="delete_wallet">
                   <input type="hidden" name="wallet_id" value="{{ wallet.id }}">
-                  <button type="submit" class="btn btn-sm btn-outline-danger font-monospace py-1 px-2" style="font-size: 0.75rem;" title="Delete Wallet">
+                  <button type="submit" class="inline-flex items-center rounded-md border border-red-300 px-3 py-1 text-xs font-semibold text-red-600 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2" title="Delete Wallet">
                     <i class="fa-regular fa-trash-can"></i>
                   </button>
                 </form>
@@ -86,7 +86,7 @@
             <!-- Address Display & Copy Button -->
             <div class="d-flex align-items-center justify-content-between bg-white p-2 rounded border border-secondary border-opacity-25 mt-2">
               <span class="font-monospace text-dark small fw-semibold text-break me-2">{{ wallet.wallet_address }}</span>
-              <button type="button" class="btn btn-sm btn-glass font-monospace flex-shrink-0" onclick="copyTextToClipboard('{{ wallet.wallet_address }}', this)">
+              <button type="button" class="inline-flex shrink-0 items-center rounded-md border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2" onclick="copyTextToClipboard('{{ wallet.wallet_address }}', this)">
                 <i class="fa-regular fa-copy me-1"></i> Copy
               </button>
             </div>
@@ -96,7 +96,7 @@
             <i class="fa-solid fa-wallet text-secondary fs-1 mb-2 d-block opacity-50"></i>
             <h6 class="text-dark fw-bold mb-1">No Wallet Addresses Saved Yet</h6>
             <p class="small mb-3 text-muted">Add your SOL, ETH, BTC, or USDT addresses so buyers can select and send payments directly to your designated receiving wallet.</p>
-            <button type="button" class="btn btn-primary-green btn-sm font-monospace fw-bold" data-bs-toggle="modal" data-bs-target="#addWalletModal">
+            <button type="button" class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2" data-bs-toggle="modal" data-bs-target="#addWalletModal">
               <i class="fa-solid fa-plus-circle me-1"></i> Add First Wallet Address
             </button>
           </div>
@@ -141,7 +141,7 @@
             {{ form.bio }}
           </div>
 
-          <button type="submit" class="btn btn-primary-green w-100 font-monospace fw-bold py-2">
+          <button type="submit" class="inline-flex w-full items-center justify-center rounded-lg bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
             Save Profile Details
           </button>
         </form>
@@ -158,7 +158,9 @@
         <h5 class="modal-title font-monospace fw-bold text-dark mb-0">
           <i class="fa-solid fa-plus-circle text-success me-2"></i> Add Crypto Wallet Address
         </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="rounded-full p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500" data-bs-dismiss="modal" aria-label="Close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </div>
 
       <form method="POST">
@@ -193,8 +195,8 @@
         </div>
 
         <div class="modal-footer border-top border-secondary border-opacity-25 bg-light rounded-bottom p-3">
-          <button type="button" class="btn btn-glass btn-sm" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary-green btn-sm fw-bold px-4">
+          <button type="button" class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="inline-flex items-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
             Save Wallet Address
           </button>
         </div>
@@ -206,6 +208,38 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  window.copyTextToClipboard = async function(text, button) {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const tempInput = document.createElement('textarea');
+        tempInput.value = text;
+        tempInput.style.position = 'fixed';
+        tempInput.style.left = '-9999px';
+        document.body.appendChild(tempInput);
+        tempInput.focus();
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+      }
+
+      if (button) {
+        const originalHtml = button.innerHTML;
+        button.innerHTML = '<i class="fa-solid fa-check me-1"></i> Copied';
+        button.classList.remove('text-slate-700');
+        button.classList.add('text-emerald-700', 'border-emerald-400', 'bg-emerald-50');
+        setTimeout(() => {
+          button.innerHTML = originalHtml;
+          button.classList.remove('text-emerald-700', 'border-emerald-400', 'bg-emerald-50');
+          button.classList.add('text-slate-700');
+        }, 1600);
+      }
+    } catch (error) {
+      console.error('Copy failed:', error);
+    }
+  };
+
   const currencySelect = document.getElementById('id_wallet_currency');
   const labelInput = document.getElementById('id_label');
 

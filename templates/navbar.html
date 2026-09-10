@@ -1,28 +1,28 @@
 <!-- Crypto Live Market Rates Ticker Bar -->
-<div class="bg-white border-b border-slate-200">
+<div class="bg-emerald-950 text-emerald-50 border-b border-emerald-900">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
       <div class="flex items-center gap-3 overflow-x-auto pb-2 md:pb-0">
-        <span class="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200 flex-shrink-0">
+        <span class="inline-flex items-center rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-200 ring-1 ring-emerald-400/30 flex-shrink-0">
           <i class="fa-solid fa-chart-line mr-1"></i> LIVE RATES:
         </span>
-        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-slate-600 flex-shrink-0">
-          <i class="fa-brands fa-ethereum text-blue-500"></i> ETH: ${{ crypto_rates.ETH|floatformat:2 }}
+        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-100 flex-shrink-0">
+          <i class="fa-brands fa-ethereum text-blue-300"></i> ETH: ${{ crypto_rates.ETH|floatformat:2 }}
         </span>
-        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-slate-600 flex-shrink-0">
-          <i class="fa-solid fa-bolt text-amber-500"></i> SOL: ${{ crypto_rates.SOL|floatformat:2 }}
+        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-100 flex-shrink-0">
+          <i class="fa-solid fa-bolt text-amber-300"></i> SOL: ${{ crypto_rates.SOL|floatformat:2 }}
         </span>
-        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-slate-600 flex-shrink-0">
-          <i class="fa-brands fa-bitcoin text-amber-600"></i> BTC: ${{ crypto_rates.BTC|floatformat:2 }}
+        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-100 flex-shrink-0">
+          <i class="fa-brands fa-bitcoin text-amber-300"></i> BTC: ${{ crypto_rates.BTC|floatformat:2 }}
         </span>
-        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-slate-600 flex-shrink-0">
-          <i class="fa-solid fa-dollar-sign text-green-600"></i> USDT: $1.00
+        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-100 flex-shrink-0">
+          <i class="fa-solid fa-dollar-sign text-emerald-300"></i> USDT: $1.00
         </span>
-        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-slate-600 flex-shrink-0">
-          <i class="fa-solid fa-naira-sign text-blue-600"></i> NGN: ${{ crypto_rates.NGN|floatformat:6 }}
+        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-emerald-100 flex-shrink-0">
+          <i class="fa-solid fa-naira-sign text-emerald-300"></i> 1 USD = ₦{{ naira_per_usd|floatformat:0 }}
         </span>
       </div>
-      <div class="hidden md:flex items-center text-xs font-semibold text-slate-500">
+      <div class="hidden md:flex items-center text-xs font-semibold text-emerald-200">
         <i class="fa-solid fa-shield-halved text-green-600 mr-1"></i> Verified Escrow Protected
       </div>
     </div>

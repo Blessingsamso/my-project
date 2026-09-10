@@ -1,6 +1,7 @@
 from notifications.models.notification import Notification
 from app.models import Transaction, SavedListing, UserRole, LandListing
 from app.utils import get_all_rates_dict
+from app.utils.exchange_rates import NAIRA_PER_USD
 
 
 def crypto_land_context(request):
@@ -12,6 +13,7 @@ def crypto_land_context(request):
         'pending_listings_count': 0,
         'crypto_rates': get_all_rates_dict(),
         'exchange_rates': get_all_rates_dict(),
+        'naira_per_usd': NAIRA_PER_USD,
     }
 
     if request.user.is_authenticated:
