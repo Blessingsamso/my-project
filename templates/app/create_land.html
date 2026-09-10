@@ -144,62 +144,38 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
   }
-});
-{% endblock %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const priceInput = document.getElementById('id_price_crypto');
-  const currencySelect = document.getElementById('id_crypto_currency');
-  const nairaDisplay = document.getElementById('naira_equivalent');
 
-  function updateNaira() {
-    const price = priceInput.value;
-    const currency = currencySelect.value;
-    
-    if (price && currency) {
-        fetch('/api/convert-crypto-to-naira/?amount=' + price + '&currency=' + currency)
-            .then(res => res.json())
-            .then(data => {
-                nairaDisplay.textContent = '₦' + parseFloat(data.naira_amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            });
-    } else {
-        nairaDisplay.textContent = '₦0.00';
-    }
-  }
-
-  if (priceInput && currencySelect) {
-      priceInput.addEventListener('input', updateNaira);
-      currencySelect.addEventListener('change', updateNaira);
-  }
-});
-document.addEventListener('DOMContentLoaded', function() {
   const priceInput = document.getElementById('id_price_crypto');
   const currencySelect = document.getElementById('id_crypto_currency');
   const nairaInput = document.getElementById('id_naira_price');
 
-  // Helper to convert crypto to naira
   function updateNaira() {
     const price = priceInput.value;
     const currency = currencySelect.value;
     if (price && currency) {
-        fetch('/api/convert-crypto-to-naira/?amount=' + price + '&currency=' + currency)
+        fetch(`/api/convert-crypto-to-naira/?amount=${price}&currency=${currency}`)
             .then(res => res.json())
             .then(data => {
-                nairaInput.value = parseFloat(data.naira_amount).toFixed(2);
-            });
+                if (data.naira_amount) {
+                    nairaInput.value = parseFloat(data.naira_amount).toFixed(2);
+                }
+            })
+            .catch(err => console.error('Error converting to Naira:', err));
     }
   }
 
-  // Helper to convert naira to crypto (you might need a new API)
   function updateCrypto() {
     const naira = nairaInput.value;
     const currency = currencySelect.value;
     if (naira && currency) {
-        fetch('/api/convert-naira-to-crypto/?amount=' + naira + '&currency=' + currency)
+        fetch(`/api/convert-naira-to-crypto/?amount=${naira}&currency=${currency}`)
             .then(res => res.json())
             .then(data => {
-                priceInput.value = parseFloat(data.crypto_amount).toFixed(6);
-            });
+                if (data.crypto_amount) {
+                    priceInput.value = parseFloat(data.crypto_amount).toFixed(6);
+                }
+            })
+            .catch(err => console.error('Error converting to Crypto:', err));
     }
   }
 
@@ -207,44 +183,13 @@ document.addEventListener('DOMContentLoaded', function() {
       priceInput.addEventListener('input', updateNaira);
       currencySelect.addEventListener('change', updateNaira);
       nairaInput.addEventListener('input', updateCrypto);
-  }
-});
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const priceInput = document.getElementById('id_price_crypto');
-  const currencySelect = document.getElementById('id_crypto_currency');
-  const nairaInput = document.getElementById('id_naira_price');
-
-  // Convert crypto to naira
-  function updateNaira() {
-    const price = priceInput.value;
-    const currency = currencySelect.value;
-    if (price && currency) {
-        fetch('/api/convert-crypto-to-naira/?amount=' + price + '&currency=' + currency)
-            .then(res => res.json())
-            .then(data => {
-                nairaInput.value = parseFloat(data.naira_amount).toFixed(2);
-            });
-    }
-  }
-
-  // Convert naira to crypto
-  function updateCrypto() {
-    const naira = nairaInput.value;
-    const currency = currencySelect.value;
-    if (naira && currency) {
-        fetch('/api/convert-naira-to-crypto/?amount=' + naira + '&currency=' + currency)
-            .then(res => res.json())
-            .then(data => {
-                priceInput.value = parseFloat(data.crypto_amount).toFixed(6);
-            });
-    }
-  }
-
-  if (priceInput && currencySelect && nairaInput) {
-      priceInput.addEventListener('input', updateNaira);
-      currencySelect.addEventListener('change', updateNaira);
-      nairaInput.addEventListener('input', updateCrypto);
+      
+      // Initial calculation for edit mode
+      if (priceInput.value) {
+          updateNaira();
+      }
   }
 });
 </script>
+{% endblock %}
+
