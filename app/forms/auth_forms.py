@@ -15,12 +15,25 @@ class UserRegistrationForm(UserCreationForm):
         initial=UserRole.BUYER,
         help_text="Select whether you want to buy land or list land for sale"
     )
-    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'placeholder': 'name@example.com', 'class': TAILWIND_INPUT}))
-    phone = forms.CharField(required=False, widget=forms.TextInput(attrs={'placeholder': '+1 (555) 000-0000', 'class': TAILWIND_INPUT}))
+    email = forms.EmailField(
+        required=True,
+        error_messages={'required': 'Email address is required.', 'invalid': 'Please enter a valid email address.'},
+        widget=forms.EmailInput(attrs={'placeholder': 'name@example.com', 'class': TAILWIND_INPUT})
+    )
+    phone = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': '+1 (555) 000-0000', 'class': TAILWIND_INPUT})
+    )
 
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'role', 'phone')
+        error_messages = {
+            'username': {
+                'required': 'Username is required.',
+                'unique': 'A user with that username already exists.',
+            }
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -28,26 +41,61 @@ class UserRegistrationForm(UserCreationForm):
             if 'class' not in field.widget.attrs:
                 field.widget.attrs['class'] = TAILWIND_INPUT
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email and User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError('An account with this email address already exists.')
+        return email
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if username and User.objects.filter(username__iexact=username).exists():
+            raise forms.ValidationError('A user with that username already exists.')
+        return username
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get('password1')
+        password2 = cleaned_data.get('password2')
+        if password1 and password2 and password1 != password2:
+            self.add_error('password2', 'The two password fields didn’t match.')
+        return cleaned_data
+
 
 class CustomLoginForm(AuthenticationForm):
-    username = forms.CharField(widget=forms.TextInput(attrs={'class': TAILWIND_INPUT, 'placeholder': 'Username or Email'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': TAILWIND_INPUT, 'placeholder': 'Password'}))
+    username = forms.CharField(
+        error_messages={'required': 'Username or email is required.'},
+        widget=forms.TextInput(attrs={'class': TAILWIND_INPUT, 'placeholder': 'Username or Email'})
+    )
+    password = forms.CharField(
+        error_messages={'required': 'Password is required.'},
+        widget=forms.PasswordInput(attrs={'class': TAILWIND_INPUT, 'placeholder': 'Password'})
+    )
 
     def clean(self):
         username = self.cleaned_data.get('username')
         password = self.cleaned_data.get('password')
 
+        if not username:
+            self.add_error('username', 'Username or email is required.')
+        if not password:
+            self.add_error('password', 'Password is required.')
+
         if username and password:
             username = username.strip()
+            resolved_username = username
             # If user provided an email address instead of username, resolve username
             if '@' in username or not User.objects.filter(username=username).exists():
                 user_obj = User.objects.filter(email__iexact=username).first()
                 if user_obj:
-                    username = user_obj.username
+                    resolved_username = user_obj.username
 
-            self.user_cache = authenticate(self.request, username=username, password=password)
+            self.user_cache = authenticate(self.request, username=resolved_username, password=password)
             if self.user_cache is None:
-                raise self.get_invalid_login_error()
+                raise forms.ValidationError(
+                    "Invalid username/email or password. Please check your credentials.",
+                    code='invalid_login',
+                )
             else:
                 self.confirm_login_allowed(self.user_cache)
 

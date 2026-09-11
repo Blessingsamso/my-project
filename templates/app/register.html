@@ -16,36 +16,77 @@
 
     <form method="POST" class="space-y-4">
       {% csrf_token %}
+      
+      {% if form.errors %}
+        <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-900">
+          <div class="flex items-center gap-2 font-semibold mb-1">
+            <i class="fa-solid fa-triangle-exclamation text-red-600"></i>
+            Please correct the validation errors below:
+          </div>
+          <ul class="list-disc pl-5 space-y-1 text-xs text-red-800">
+            {% for field in form %}
+              {% for error in field.errors %}
+                <li><span class="font-medium capitalize">{{ field.label }}:</span> {{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
       <div class="grid gap-4 md:grid-cols-2">
         <div>
           <label class="mb-1 block text-xs font-semibold uppercase text-slate-500">Username *</label>
           {{ form.username }}
+          {% if form.username.errors %}
+            <p class="mt-1 text-xs text-red-600">{{ form.username.errors.0 }}</p>
+          {% endif %}
         </div>
         <div>
           <label class="mb-1 block text-xs font-semibold uppercase text-slate-500">Email *</label>
           {{ form.email }}
+          {% if form.email.errors %}
+            <p class="mt-1 text-xs text-red-600">{{ form.email.errors.0 }}</p>
+          {% endif %}
         </div>
         <div>
           <label class="mb-1 block text-xs font-semibold uppercase text-slate-500">First name</label>
           {{ form.first_name }}
+          {% if form.first_name.errors %}
+            <p class="mt-1 text-xs text-red-600">{{ form.first_name.errors.0 }}</p>
+          {% endif %}
         </div>
         <div>
           <label class="mb-1 block text-xs font-semibold uppercase text-slate-500">Last name</label>
           {{ form.last_name }}
+          {% if form.last_name.errors %}
+            <p class="mt-1 text-xs text-red-600">{{ form.last_name.errors.0 }}</p>
+          {% endif %}
         </div>
       </div>
       <div>
         <label class="mb-1 block text-xs font-semibold uppercase text-slate-500">Role *</label>
         {{ form.role }}
+        {% if form.role.errors %}
+          <p class="mt-1 text-xs text-red-600">{{ form.role.errors.0 }}</p>
+        {% endif %}
       </div>
       <div class="grid gap-4 md:grid-cols-2">
         <div>
           <label class="mb-1 block text-xs font-semibold uppercase text-slate-500">Password *</label>
           {{ form.password1 }}
+          {% if form.password1.errors %}
+            <p class="mt-1 text-xs text-red-600">{{ form.password1.errors.0 }}</p>
+          {% endif %}
         </div>
         <div>
           <label class="mb-1 block text-xs font-semibold uppercase text-slate-500">Confirm password *</label>
           {{ form.password2 }}
+          {% if form.password2.errors %}
+            <p class="mt-1 text-xs text-red-600">{{ form.password2.errors.0 }}</p>
+          {% endif %}
         </div>
       </div>
       <button type="submit" class="w-full rounded-xl bg-emerald-600 py-3 font-semibold text-white hover:bg-emerald-700">

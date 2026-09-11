@@ -14,13 +14,39 @@
 
     <form method="POST">
       {% csrf_token %}
+
+      {% if form.errors %}
+        <div class="mb-4 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-900">
+          <div class="flex items-center gap-2 font-semibold mb-1">
+            <i class="fa-solid fa-triangle-exclamation text-red-600"></i>
+            Please correct the validation errors below:
+          </div>
+          <ul class="list-disc pl-5 space-y-1 text-xs text-red-800">
+            {% for field in form %}
+              {% for error in field.errors %}
+                <li><span class="font-medium capitalize">{{ field.label }}:</span> {{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
       <div class="mb-3">
         <label class="mb-1 block text-xs font-semibold uppercase text-slate-500">Username or email</label>
         {{ form.username }}
+        {% if form.username.errors %}
+          <p class="mt-1 text-xs text-red-600">{{ form.username.errors.0 }}</p>
+        {% endif %}
       </div>
       <div class="mb-5">
         <label class="mb-1 block text-xs font-semibold uppercase text-slate-500">Password</label>
         {{ form.password }}
+        {% if form.password.errors %}
+          <p class="mt-1 text-xs text-red-600">{{ form.password.errors.0 }}</p>
+        {% endif %}
       </div>
       <button type="submit" class="mb-4 w-full rounded-xl bg-emerald-600 py-3 font-semibold text-white hover:bg-emerald-700">
         Log in
