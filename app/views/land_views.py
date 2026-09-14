@@ -64,10 +64,6 @@ def land_list(request):
                 Q(parcel_id__icontains=q)
             )
 
-        state = form.cleaned_data.get('state')
-        if state:
-            queryset = queryset.filter(state__iexact=state)
-
         lga = form.cleaned_data.get('lga')
         if lga:
             queryset = queryset.filter(lga__iexact=lga)

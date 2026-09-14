@@ -46,11 +46,7 @@
             {{ filter_form.q }}
           </div>
 
-          <!-- Nigerian State Filter -->
-          <div>
-            <label class="block text-xs font-mono text-slate-600 mb-2 font-semibold">NIGERIAN STATE</label>
-            {{ filter_form.state }}
-          </div>
+
 
           <!-- LGA Filter -->
           <div>
@@ -120,37 +116,6 @@
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const filterState = document.getElementById('filter_state');
-  const filterLga = document.getElementById('filter_lga');
 
-  if (filterState && filterLga) {
-    filterState.addEventListener('change', function() {
-      const selectedState = this.value;
-      filterLga.innerHTML = '<option value="">Loading LGAs...</option>';
-
-      if (!selectedState) {
-        filterLga.innerHTML = '<option value="">All LGAs</option>';
-        return;
-      }
-
-      fetch(`/api/lgas/?state=${encodeURIComponent(selectedState)}`)
-        .then(response => response.json())
-        .then(data => {
-          filterLga.innerHTML = '<option value="">All LGAs</option>';
-          data.lgas.forEach(lga => {
-            const opt = document.createElement('option');
-            opt.value = lga;
-            opt.textContent = lga;
-            filterLga.appendChild(opt);
-          });
-        })
-        .catch(err => {
-          console.error('Error loading LGAs:', err);
-          filterLga.innerHTML = '<option value="">All LGAs</option>';
-        });
-    });
-  }
-});
 </script>
 {% endblock %}

@@ -31,13 +31,9 @@
         </div>
       </div>
 
-      <div class="grid gap-4 md:grid-cols-3">
+      <div class="grid gap-4 md:grid-cols-2">
         <div>
-          <label class="mb-1 block text-xs font-semibold uppercase text-slate-500">Nigerian state / FCT *</label>
-          {{ form.state }}
-        </div>
-        <div>
-          <label class="mb-1 block text-xs font-semibold uppercase text-slate-500">LGA</label>
+          <label class="mb-1 block text-xs font-semibold uppercase text-slate-500">Local Government Area (LGA) *</label>
           {{ form.lga }}
         </div>
       </div>
@@ -115,35 +111,7 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const stateSelect = document.getElementById('id_state');
-  const lgaSelect = document.getElementById('id_lga');
 
-  if (stateSelect && lgaSelect) {
-    stateSelect.addEventListener('change', function() {
-      const selectedState = this.value;
-      lgaSelect.innerHTML = '<option value="">Loading LGAs...</option>';
-
-      if (!selectedState) {
-        lgaSelect.innerHTML = '<option value="">Select State First</option>';
-        return;
-      }
-
-      fetch(`/api/lgas/?state=${encodeURIComponent(selectedState)}`)
-        .then(response => response.json())
-        .then(data => {
-          lgaSelect.innerHTML = '<option value="">Select LGA</option>';
-          data.lgas.forEach(lga => {
-            const opt = document.createElement('option');
-            opt.value = lga;
-            opt.textContent = lga;
-            lgaSelect.appendChild(opt);
-          });
-        })
-        .catch(() => {
-          lgaSelect.innerHTML = '<option value="">Select LGA</option>';
-        });
-    });
-  }
 
   const priceInput = document.getElementById('id_price_crypto');
   const currencySelect = document.getElementById('id_crypto_currency');
