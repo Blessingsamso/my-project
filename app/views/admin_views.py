@@ -16,12 +16,16 @@ def admin_dashboard(request):
         Transaction.Status.ACCEPTED
     ]).select_related('land', 'buyer', 'seller')
     
+    # Fetch all transactions to let admin see when buyers initiated transactions and generate receipts
+    all_transactions = Transaction.objects.all().select_related('land', 'buyer', 'seller').order_by('-created_at')
+    
     users = User.objects.all().order_by('-date_joined')[:20]
 
     context = {
         'pending_listings': pending_listings,
         'all_listings': all_listings,
         'escrow_transactions': escrow_transactions,
+        'all_transactions': all_transactions,
         'users': users,
         'stats': {
             'total_users': User.objects.count(),
@@ -102,3 +106,34 @@ def toggle_user_verification(request, user_id):
     status_str = "Verified Seller" if user_obj.is_verified_seller else "Standard User"
     messages.info(request, f"Updated {user_obj.username}'s verification status to {status_str}.")
     return redirect('app:admin_dashboard')
+
+
+@admin_required
+def generate_receipt_pdf(request, transaction_id):
+    """Generates a professional PDF receipt for a land transaction using Weasyprint."""
+    import weasyprint
+    from django.template.loader import render_to_string
+    from django.http import HttpResponse
+
+    tx = get_object_or_404(Transaction, transaction_id=transaction_id)
+    
+    # Context for the receipt template
+    context = {
+        'tx': tx,
+        'buyer': tx.buyer,
+        'seller': tx.seller,
+        'land': tx.land,
+    }
+
+    # Render HTML content to string
+    html_string = render_to_string('app/receipt_pdf.html', context)
+
+    # Generate PDF response
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="receipt_{tx.transaction_id}.pdf"'
+
+    # Compile HTML using Weasyprint and write to response
+    weasyprint.HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf(response)
+    
+    return response
+

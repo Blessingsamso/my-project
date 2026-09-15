@@ -39,4 +39,5 @@ urlpatterns = [
     path('platform-admin/approve/<int:land_id>/', views.approve_land_listing, name='approve_land_listing'),
     path('platform-admin/confirm-escrow/<uuid:transaction_id>/', views.confirm_escrow_payment, name='confirm_escrow_payment'),
     path('platform-admin/user-verify/<int:user_id>/', views.toggle_user_verification, name='toggle_user_verification'),
+    path('platform-admin/receipt/<uuid:transaction_id>/', views.generate_receipt_pdf, name='generate_receipt_pdf'),
 ]

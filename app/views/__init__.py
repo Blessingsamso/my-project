@@ -6,5 +6,5 @@ from .land_views import (
     toggle_save_land, buyer_dashboard, seller_dashboard, get_lgas_api, get_exchange_rates_api, 
     convert_crypto_to_naira_api, convert_naira_to_crypto_api
 )
-from .admin_views import admin_dashboard, approve_land_listing, confirm_escrow_payment, toggle_user_verification
+from .admin_views import admin_dashboard, approve_land_listing, confirm_escrow_payment, toggle_user_verification, generate_receipt_pdf
 from .profile_views import profile_view

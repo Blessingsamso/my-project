@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Transaction Receipt - {{ tx.transaction_id }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .header {
+            border-bottom: 2px solid #059669;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #059669;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .header-subtitle {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 5px;
+        }
+        .receipt-meta-table {
+            width: 100%;
+            margin-bottom: 25px;
+            border-collapse: collapse;
+        }
+        .receipt-meta-table td {
+            padding: 4px 0;
+            vertical-align: top;
+        }
+        .meta-label {
+            font-weight: bold;
+            color: #475569;
+            width: 150px;
+        }
+        .meta-val {
+            color: #0f172a;
+        }
+        .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #0f172a;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 5px;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .info-grid {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .info-grid td {
+            width: 50%;
+            vertical-align: top;
+            padding: 0 10px 0 0;
+        }
+        .party-card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px;
+            min-height: 100px;
+        }
+        .party-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #475569;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .party-item {
+            margin-bottom: 4px;
+            word-break: break-all;
+        }
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            margin-bottom: 25px;
+        }
+        .details-table th {
+            background-color: #f1f5f9;
+            border-bottom: 2px solid #cbd5e1;
+            padding: 8px 10px;
+            text-align: left;
+            font-weight: bold;
+            color: #334155;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        .details-table td {
+            padding: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+        .crypto-price {
+            font-size: 16px;
+            font-weight: bold;
+            color: #059669;
+        }
+        .fiat-price {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 3px;
+        }
+        .footer {
+            margin-top: 50px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+            text-align: center;
+            font-size: 10px;
+            color: #94a3b8;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .badge-escrow {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        .badge-pending {
+            background-color: #e0f2fe;
+            color: #075985;
+        }
+        .badge-other {
+            background-color: #f1f5f9;
+            color: #334155;
+        }
+        .sign-table {
+            width: 100%;
+            margin-top: 50px;
+            border-collapse: collapse;
+        }
+        .sign-table td {
+            width: 50%;
+            text-align: center;
+            vertical-align: bottom;
+            padding-top: 60px;
+        }
+        .sign-line {
+            width: 200px;
+            border-bottom: 1px solid #94a3b8;
+            margin: 0 auto 5px auto;
+        }
+        .mono {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+        
+</head>
+<body>
+    <div class="header">
+        <table class="header-table">
+            <tr>
+                <td>
+                    <div class="header-title">BLESSING SAMSON</div>
+                    <div class="header-subtitle">Verified Blockchain Land Registration & Escrow Transfer Service</div>
+                </td>
+                <td style="text-align: right; vertical-align: bottom;">
+                    <div style="font-size: 16px; font-weight: bold; color: #475569;">OFFICIAL RECEIPT</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table class="receipt-meta-table">
+        <tr>
+            <td class="meta-label">Receipt ID:</td>
+            <td class="meta-val mono">{{ tx.transaction_id }}</td>
+        </tr>
+        <tr>
+            <td class="meta-label">Initiation Date:</td>
+            <td class="meta-val">{{ tx.created_at|date:"F j, Y, g:i a" }} (GMT)</td>
+        </tr>
+        <tr>
+            <td class="meta-label">Last Updated:</td>
+            <td class="meta-val">{{ tx.updated_at|date:"F j, Y, g:i a" }} (GMT)</td>
+        </tr>
+        <tr>
+            <td class="meta-label">Transaction Status:</td>
+            <td class="meta-val">
+                <span class="badge {% if tx.status == 'completed' %}badge-completed{% elif tx.status == 'escrow_locked' %}badge-escrow{% elif tx.status == 'payment_pending' %}badge-pending{% else %}badge-other{% endif %}">
+                    {{ tx.get_status_display }}
+                </span>
+            </td>
+        </tr>
+    </table>
+
+    <div class="section-title">Parties Involved</div>
+    <table class="info-grid">
+        <tr>
+            <td>
+                <div class="party-card">
+                    <div class="party-title">Buyer Information</div>
+                    <div class="party-item"><strong>Name:</strong> {{ buyer.first_name }} {{ buyer.last_name|default:buyer.username }}</div>
+                    <div class="party-item"><strong>Email:</strong> {{ buyer.email }}</div>
+                    <div class="party-item mono" style="font-size: 10px; margin-top: 5px;">
+                        <strong>Wallet:</strong><br>{{ tx.buyer_wallet_address }}
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="party-card">
+                    <div class="party-title">Seller Information</div>
+                    <div class="party-item"><strong>Name:</strong> {{ seller.first_name }} {{ seller.last_name|default:seller.username }}</div>
+                    <div class="party-item"><strong>Email:</strong> {{ seller.email }}</div>
+                    <div class="party-item mono" style="font-size: 10px; margin-top: 5px;">
+                        <strong>Wallet:</strong><br>{{ tx.seller_wallet_address|default:"Not Provided" }}
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <div class="section-title">Property Details</div>
+    <table class="details-table">
+        <thead>
+            <tr>
+                <th>Property Reference / ID</th>
+                <th>Description</th>
+                <th>Location</th>
+                <th style="text-align: right;">Size</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <div style="font-weight: bold; color: #0f172a;">{{ land.title }}</div>
+                    <div class="mono" style="font-size: 10px; margin-top: 3px; color: #475569;">Parcel ID: {{ land.parcel_id|default:"N/A" }}</div>
+                </td>
+                <td style="max-width: 200px; font-size: 11px; color: #475569;">
+                    {{ land.description|truncatewords:20 }}
+                </td>
+                <td>
+                    {{ land.location }}
+                </td>
+                <td style="text-align: right; font-weight: bold;">
+                    {{ land.size_sqm }} Sqm
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="section-title">Financial & Escrow Details</div>
+    <table class="details-table">
+        <thead>
+            <tr>
+                <th>Crypto Cost</th>
+                <th>USD</th>
+                <th>NGN</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <div class="crypto-price">{{ tx.offer_price_crypto }} {{ tx.crypto_currency }}</div>
+                </td>
+                <td>
+                    <div style="font-size: 14px; font-weight: bold; color: #334155;">${{ tx.offer_price_usd }} USD</div>
+                </td>
+                <td>
+                    <div style="font-size: 14px; font-weight: bold; color: #334155;">₦{{ tx.offer_price_naira }} NGN</div>
+                </td>
+                
+            </tr>
+        </tbody>
+    </table>
+    <th style="text-align: right;">Escrow Wallet Address</th>
+    <td style="text-align: right;" class="mono">
+        {{ tx.escrow_wallet_address|default:"0x71C7656EC7ab88b098defB751B7401B5f6d8976F" }}
+    </td>
+    
+
+    {% if tx.tx_hash %}
+    <div style="background-color: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 10px 15px; margin-top: 15px;">
+        <strong style="color: #475569; font-size: 11px; text-transform: uppercase;">Blockchain Tx Hash (Proof of Payment):</strong><br>
+        <span class="mono" style="font-size: 12px; color: #059669; word-break: break-all;">{{ tx.tx_hash }}</span>
+    </div>
+    {% endif %}
+
+    <table class="sign-table">
+        <tr>
+            <td>
+                <div class="sign-line"></div>
+                <div style="font-weight: bold;">Buyer Signature</div>
+                <div style="font-size: 10px; color: #64748b;">Digitally Confirmed via Wallet</div>
+            </td>
+            <td>
+                <div class="sign-line"></div>
+                <div style="font-weight: bold;">Platform Auditor (Admin)</div>
+                <div style="font-size: 10px; color: #64748b;">Blessing Samson Escrow Audit</div>
+            </td>
+        </tr>
+    </table>
+
+    
+</body>
+</html>
