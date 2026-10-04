@@ -108,14 +108,25 @@ def toggle_user_verification(request, user_id):
     return redirect('app:admin_dashboard')
 
 
-@admin_required
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseForbidden
+
+
+@login_required
 def generate_receipt_pdf(request, transaction_id):
-    """Generates a professional PDF receipt for a land transaction using Weasyprint."""
+    """Generates a professional PDF receipt for any involved party (buyer, seller, admin)."""
     import weasyprint
     from django.template.loader import render_to_string
-    from django.http import HttpResponse
 
     tx = get_object_or_404(Transaction, transaction_id=transaction_id)
+    
+    # Check permissions: only buyer, seller, or platform admin can access
+    is_buyer = (request.user == tx.buyer)
+    is_seller = (request.user == tx.seller)
+    is_admin = request.user.is_admin_user()
+    
+    if not (is_buyer or is_seller or is_admin):
+        return HttpResponseForbidden("You are not authorized to view or download this receipt.")
     
     # Context for the receipt template
     context = {
@@ -123,6 +134,7 @@ def generate_receipt_pdf(request, transaction_id):
         'buyer': tx.buyer,
         'seller': tx.seller,
         'land': tx.land,
+        'current_user': request.user,
     }
 
     # Render HTML content to string
@@ -130,10 +142,15 @@ def generate_receipt_pdf(request, transaction_id):
 
     # Generate PDF response
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'inline; filename="receipt_{tx.transaction_id}.pdf"'
+    filename = f"receipt_{tx.transaction_id}.pdf"
+
+    if request.GET.get('download') in ['1', 'true', 'True']:
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    else:
+        response['Content-Disposition'] = f'inline; filename="{filename}"'
 
     # Compile HTML using Weasyprint and write to response
-    weasyprint.HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf(response)
+    weasyprint.HTML(string=html_string, base_url=request.build_absolute_uri('/')).write_pdf(response)
     
     return response
 

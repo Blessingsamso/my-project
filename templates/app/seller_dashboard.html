@@ -42,79 +42,117 @@
   </div>
 
   <!-- Received Offers Section -->
-  <div class="bg-white border border-slate-200 rounded-lg p-4 md:p-6 mb-8 shadow-sm">
-    <h4 class="font-mono text-lg md:text-xl font-bold text-slate-900 mb-6">
-      <i class="fa-solid fa-inbox text-emerald-600 mr-2"></i> Received Purchase Offers
-    </h4>
+  <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+    <div class="px-6 py-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-50/60">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-lg shadow-sm">
+          <i class="fa-solid fa-inbox"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h4 class="font-mono text-lg font-bold text-slate-900">Received Purchase Offers</h4>
+            <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full {% if received_offers.count > 0 %}bg-emerald-100 text-emerald-800 border border-emerald-200{% else %}bg-slate-100 text-slate-600{% endif %}">
+              {{ received_offers.count }} Offers
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 mt-0.5">Review, accept, or decline crypto purchase proposals from prospective buyers</p>
+        </div>
+      </div>
+    </div>
 
     <div class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead class="border-b border-slate-200 bg-slate-50">
-          <tr>
-            <th class="text-left px-4 py-3 font-mono font-semibold text-slate-700">LAND PROPERTY</th>
-            <th class="text-left px-4 py-3 font-mono font-semibold text-slate-700">BUYER</th>
-            <th class="text-left px-4 py-3 font-mono font-semibold text-slate-700">PRICE OFFERED PRICE EQUIVALENT</th>
-            <th class="text-left px-4 py-3 font-mono font-semibold text-slate-700">BUYER WALLET</th>
-            <th class="text-left px-4 py-3 font-mono font-semibold text-slate-700">STATUS</th>
-            <th class="text-right px-4 py-3 font-mono font-semibold text-slate-700">ACTION</th>
+      <table class="w-full text-sm text-left border-collapse">
+        <thead>
+          <tr class="border-b border-slate-200 bg-slate-50/80">
+            <th class="py-3.5 px-5 font-mono text-xs font-semibold text-slate-600 uppercase tracking-wider">Property & Location</th>
+            <th class="py-3.5 px-4 font-mono text-xs font-semibold text-slate-600 uppercase tracking-wider">Prospective Buyer</th>
+            <th class="py-3.5 px-4 font-mono text-xs font-semibold text-slate-600 uppercase tracking-wider">Offer Amount</th>
+            <th class="py-3.5 px-4 font-mono text-xs font-semibold text-slate-600 uppercase tracking-wider">Status</th>
+            <th class="py-3.5 px-5 font-mono text-xs font-semibold text-slate-600 uppercase tracking-wider text-right">Actions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-slate-100">
           {% for tx in received_offers %}
-          <tr class="border-b border-slate-200 hover:bg-slate-50">
-            <td class="px-4 py-4">
+          <tr class="hover:bg-slate-50/80 transition duration-150">
+            <td class="py-4 px-5">
               <div class="font-semibold text-slate-900">
-                <a href="{% url 'app:land_detail' slug=tx.land.slug %}" class="text-slate-900 hover:text-emerald-600">{{ tx.land.title }}</a>
+                <a href="{% url 'app:land_detail' slug=tx.land.slug %}" class="text-slate-900 hover:text-emerald-600 transition">{{ tx.land.title }}</a>
               </div>
-              <div class="text-xs text-slate-600 font-mono">
-                <i class="fa-solid fa-location-dot mr-1"></i> {{ tx.land.location }}
+              <div class="text-xs text-slate-500 font-mono mt-1 flex items-center gap-2">
+                <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                  <i class="fa-solid fa-file-contract mr-1 text-slate-400"></i> {{ tx.land.parcel_id|default:"Doc Pending" }}
+                </span>
+                <span><i class="fa-solid fa-location-dot mr-0.5 text-slate-400"></i> {{ tx.land.location|truncatechars:24 }}</span>
               </div>
             </td>
-            <td class="px-4 py-4">
+            <td class="py-4 px-4">
               <div class="font-semibold text-slate-900">{{ tx.buyer.first_name }} {{ tx.buyer.last_name|default:tx.buyer.username }}</div>
-              <div class="text-xs text-slate-600">{{ tx.buyer.email }}</div>
+              <div class="text-xs text-slate-500">{{ tx.buyer.email }}</div>
+              <div class="mt-1" title="{{ tx.buyer_wallet_address }}">
+                <span class="font-mono text-xs text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                  {{ tx.buyer_wallet_address|slice:":6" }}...{{ tx.buyer_wallet_address|slice:"-4:" }}
+                </span>
+              </div>
             </td>
-            <td class="px-4 py-4">
-              <div class="font-bold text-emerald-600 font-mono">{{ tx.offer_price_crypto }} {{ tx.crypto_currency }}</div>
+            <td class="py-4 px-4">
+              <div class="font-bold text-emerald-600 font-mono text-sm">{{ tx.offer_price_crypto }} {{ tx.crypto_currency }}</div>
               <div class="text-xs text-slate-500 font-mono">≈ {{ tx.offer_price_naira|format_naira }}</div>
             </td>
-            <td class="px-4 py-4 font-mono text-xs text-slate-600 max-w-xs truncate">
-              {{ tx.buyer_wallet_address|default:"Not Provided" }}
-            </td>
-            <td class="px-4 py-4">
-              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                {% if tx.status == 'offer_submitted' %}bg-blue-100 text-blue-800
-                {% elif tx.status == 'accepted' %}bg-emerald-100 text-emerald-800
-                {% elif tx.status == 'escrow_locked' %}bg-amber-100 text-amber-800
-                {% elif tx.status == 'completed' %}bg-emerald-100 text-emerald-800
-                {% else %}bg-slate-100 text-slate-800{% endif %}">
+            <td class="py-4 px-4">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
+                {% if tx.status == 'offer_submitted' %}bg-blue-100 text-blue-800 border border-blue-200
+                {% elif tx.status == 'accepted' %}bg-purple-100 text-purple-800 border border-purple-200
+                {% elif tx.status == 'escrow_locked' %}bg-amber-100 text-amber-800 border border-amber-200
+                {% elif tx.status == 'completed' %}bg-emerald-100 text-emerald-800 border border-emerald-200
+                {% else %}bg-slate-100 text-slate-700 border border-slate-200{% endif %}">
+                <span class="w-1.5 h-1.5 rounded-full mr-1.5 {% if tx.status == 'offer_submitted' %}bg-blue-500 animate-pulse{% elif tx.status == 'escrow_locked' %}bg-amber-500 animate-pulse{% elif tx.status == 'completed' %}bg-emerald-500{% else %}bg-purple-500{% endif %}"></span>
                 {{ tx.get_status_display }}
               </span>
             </td>
-            <td class="px-4 py-4 text-right">
-              {% if tx.status == 'offer_submitted' %}
-              <form action="{% url 'app:respond_to_offer' transaction_id=tx.transaction_id %}" method="POST" class="flex gap-2 justify-end flex-wrap">
-                {% csrf_token %}
-                <button type="submit" name="action" value="accept" class="px-3 py-1 text-sm font-semibold bg-emerald-600 text-white rounded hover:bg-emerald-700 transition">
-                  <i class="fa-solid fa-check mr-1"></i> Accept
-                </button>
-                <button type="submit" name="action" value="reject" class="px-3 py-1 text-sm font-semibold border border-red-300 text-red-700 rounded hover:bg-red-50 transition">
-                  Decline
-                </button>
-              </form>
-              {% elif tx.status == 'escrow_locked' %}
-              <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-emerald-100 text-emerald-800">
-                <i class="fa-solid fa-lock mr-1"></i> Escrow Locked
-              </span>
-              {% else %}
-              <span class="text-xs text-slate-600">No Action Required</span>
-              {% endif %}
+            <td class="py-4 px-5 text-right whitespace-nowrap">
+              <div class="flex items-center justify-end gap-1.5">
+                {% if tx.status == 'offer_submitted' %}
+                <form action="{% url 'app:respond_to_offer' transaction_id=tx.transaction_id %}" method="POST" class="inline-flex gap-1.5">
+                  {% csrf_token %}
+                  <button type="submit" name="action" value="accept" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition shadow-sm">
+                    <i class="fa-solid fa-check"></i> Accept
+                  </button>
+                  <button type="submit" name="action" value="reject" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold border border-red-300 text-red-700 rounded-lg hover:bg-red-50 transition">
+                    Decline
+                  </button>
+                </form>
+                {% elif tx.status == 'accepted' %}
+                <span class="inline-flex items-center gap-1 px-2 py-1 text-xs text-purple-700 bg-purple-50 border border-purple-200 rounded-md font-medium">
+                  <i class="fa-solid fa-clock"></i> Awaiting Buyer Escrow
+                </span>
+                {% elif tx.status == 'escrow_locked' %}
+                <span class="inline-flex items-center gap-1 px-2 py-1 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-md font-medium">
+                  <i class="fa-solid fa-vault"></i> Escrow Locked (In Audit)
+                </span>
+                {% elif tx.status == 'completed' %}
+                <span class="inline-flex items-center gap-1 px-2 py-1 text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-md font-medium">
+                  <i class="fa-solid fa-certificate"></i> Sold & Transferred
+                </span>
+                {% endif %}
+
+                <!-- Receipt Actions -->
+                <a href="{% url 'app:generate_receipt_pdf' transaction_id=tx.transaction_id %}" target="_blank" class="inline-flex items-center px-2 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg transition shadow-xs" title="View PDF Receipt">
+                  <i class="fa-solid fa-file-pdf text-emerald-600"></i>
+                </a>
+                <a href="{% url 'app:generate_receipt_pdf' transaction_id=tx.transaction_id %}?download=1" class="inline-flex items-center px-2 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg transition shadow-xs" title="Download PDF Receipt">
+                  <i class="fa-solid fa-download"></i>
+                </a>
+              </div>
             </td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="6" class="px-4 py-8 text-center text-slate-600">
-              No purchase offers received yet.
+            <td colspan="5" class="py-12 px-6 text-center text-slate-500">
+              <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3 text-xl">
+                <i class="fa-regular fa-folder-open"></i>
+              </div>
+              <div class="font-semibold text-slate-800 mb-1">No Purchase Offers Received Yet</div>
+              <p class="text-xs text-slate-400 max-w-sm mx-auto">When buyers find your listed parcels and submit purchase offers, they will appear here with full crypto pricing details.</p>
             </td>
           </tr>
           {% endfor %}

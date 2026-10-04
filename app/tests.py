@@ -1,10 +1,16 @@
+from unittest.mock import patch
 from django.test import TestCase
 from django.urls import reverse
-from app.models import User, UserRole, LandListing, ZoningType, Transaction, SavedListing
+from app.models import User, UserRole, LandListing, ZoningType, Transaction, SavedListing, SellerWallet
 
 
 class CryptoLandBuyingTests(TestCase):
     def setUp(self):
+        # Mock external push notification service to prevent network timeouts during testing
+        self.patcher = patch('notifications.notification_services.NotificationService.send_external_push')
+        self.mock_push = self.patcher.start()
+        self.addCleanup(self.patcher.stop)
+
         # Create Buyer
         self.buyer = User.objects.create_user(
             username='buyer1',
@@ -27,6 +33,13 @@ class CryptoLandBuyingTests(TestCase):
             crypto_wallet_address='0xSeller987654321',
             is_verified_seller=True
         )
+        SellerWallet.objects.create(
+            user=self.seller,
+            label='Primary ETH Wallet',
+            currency='ETH',
+            wallet_address='0xSeller987654321',
+            is_default=True
+        )
 
         # Create Admin
         self.admin = User.objects.create_superuser(
@@ -35,6 +48,14 @@ class CryptoLandBuyingTests(TestCase):
             password='password123',
             role=UserRole.ADMIN,
             is_staff=True
+        )
+
+        # Create Another User (Unrelated third-party)
+        self.other_user = User.objects.create_user(
+            username='stranger',
+            email='stranger@crypto.io',
+            password='password123',
+            role=UserRole.BUYER
         )
 
         # Create Land Listing
@@ -71,9 +92,9 @@ class CryptoLandBuyingTests(TestCase):
         response = self.client.post(reverse('app:create_land'), {
             'title': 'Highland Ranch Plot',
             'description': '10-acre mountain parcel.',
-            'state': 'Lagos',
-            'lga': 'Eti Osa',
-            'location': 'Lekki Phase 1',
+            'state': 'Adamawa',
+            'lga': 'Gombi',
+            'location': 'Gombi District',
             'price_crypto': '3.2',
             'crypto_currency': 'ETH',
             'price_usd': '10240.00',
@@ -169,9 +190,90 @@ class CryptoLandBuyingTests(TestCase):
         self.assertEqual(new_user.role, UserRole.BUYER)
 
     def test_lgas_api_endpoint(self):
-        response = self.client.get(reverse('app:get_lgas_api') + '?state=Lagos')
+        response = self.client.get(reverse('app:get_lgas_api') + '?state=Adamawa')
         self.assertEqual(response.status_code, 200)
         json_data = response.json()
-        self.assertEqual(json_data['state'], 'Lagos')
-        self.assertIn('Eti Osa', json_data['lgas'])
-        self.assertIn('Ikeja', json_data['lgas'])
+        self.assertEqual(json_data['state'], 'Adamawa')
+        self.assertIn('Gombi', json_data['lgas'])
+        self.assertIn('Michika', json_data['lgas'])
+
+    def test_receipt_access_by_all_involved_parties(self):
+        # Create an offer / transaction
+        tx = Transaction.objects.create(
+            land=self.land,
+            buyer=self.buyer,
+            seller=self.seller,
+            offer_price_crypto=15.5,
+            crypto_currency='ETH',
+            offer_price_usd=49600.00,
+            buyer_wallet_address=self.buyer.crypto_wallet_address,
+            status=Transaction.Status.OFFER_SUBMITTED,
+            notes='Initial purchase offer'
+        )
+
+        receipt_url = reverse('app:generate_receipt_pdf', kwargs={'transaction_id': tx.transaction_id})
+
+        # 1. Unauthenticated user is redirected to login
+        self.client.logout()
+        res_anon = self.client.get(receipt_url)
+        self.assertEqual(res_anon.status_code, 302)
+        self.assertIn('login', res_anon.url)
+
+        # 2. Buyer can view inline receipt
+        self.client.login(username='buyer1', password='password123')
+        res_buyer = self.client.get(receipt_url)
+        self.assertEqual(res_buyer.status_code, 200)
+        self.assertEqual(res_buyer['Content-Type'], 'application/pdf')
+        self.assertIn('inline', res_buyer['Content-Disposition'])
+        self.assertIn(str(tx.transaction_id), res_buyer['Content-Disposition'])
+
+        # 3. Buyer can download receipt via ?download=1
+        res_buyer_download = self.client.get(f"{receipt_url}?download=1")
+        self.assertEqual(res_buyer_download.status_code, 200)
+        self.assertEqual(res_buyer_download['Content-Type'], 'application/pdf')
+        self.assertIn('attachment', res_buyer_download['Content-Disposition'])
+
+        # 4. Seller can view and download receipt
+        self.client.login(username='seller1', password='password123')
+        res_seller = self.client.get(receipt_url)
+        self.assertEqual(res_seller.status_code, 200)
+        self.assertEqual(res_seller['Content-Type'], 'application/pdf')
+        self.assertIn('inline', res_seller['Content-Disposition'])
+
+        res_seller_download = self.client.get(f"{receipt_url}?download=1")
+        self.assertEqual(res_seller_download.status_code, 200)
+        self.assertIn('attachment', res_seller_download['Content-Disposition'])
+
+        # 5. Platform Admin can view and download receipt
+        self.client.login(username='admin1', password='password123')
+        res_admin = self.client.get(receipt_url)
+        self.assertEqual(res_admin.status_code, 200)
+        self.assertEqual(res_admin['Content-Type'], 'application/pdf')
+
+        # 6. Uninvolved third-party user is forbidden (403)
+        self.client.login(username='stranger', password='password123')
+        res_stranger = self.client.get(receipt_url)
+        self.assertEqual(res_stranger.status_code, 403)
+
+    def test_receipt_after_payment_completed(self):
+        # Create completed transaction with payment tx_hash
+        tx = Transaction.objects.create(
+            land=self.land,
+            buyer=self.buyer,
+            seller=self.seller,
+            offer_price_crypto=15.5,
+            crypto_currency='ETH',
+            offer_price_usd=49600.00,
+            buyer_wallet_address=self.buyer.crypto_wallet_address,
+            tx_hash='0x0123456789abcdef0123456789abcdef01234567',
+            status=Transaction.Status.COMPLETED
+        )
+
+        receipt_url = reverse('app:generate_receipt_pdf', kwargs={'transaction_id': tx.transaction_id})
+
+        # Buyer can download completed receipt
+        self.client.login(username='buyer1', password='password123')
+        response = self.client.get(receipt_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertTrue(len(response.content) > 0)

@@ -44,78 +44,114 @@
   </div>
 
   <!-- Section 1: Escrow Verification & Funds Release -->
-  <div class="bg-white border border-slate-200 rounded-lg p-4 md:p-6 shadow-sm mb-8">
-    <h4 class="font-mono text-lg md:text-xl font-bold text-slate-900 mb-6">
-      <i class="fa-solid fa-vault text-emerald-600 mr-2"></i> Active Escrow Payments Awaiting Audit
-    </h4>
+  <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-8">
+    <div class="px-6 py-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-50/60">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-lg shadow-sm">
+          <i class="fa-solid fa-vault"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h4 class="font-mono text-lg font-bold text-slate-900">Active Escrow Payments Awaiting Audit</h4>
+            <span class="px-2.5 py-0.5 text-xs font-semibold rounded-full {% if escrow_transactions.count > 0 %}bg-amber-100 text-amber-800 border border-amber-200{% else %}bg-slate-100 text-slate-600{% endif %}">
+              {{ escrow_transactions.count }} Pending
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 mt-0.5">Escrow funds locked on-chain requiring administrative audit before deed release</p>
+        </div>
+      </div>
+    </div>
 
     <div class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead class="border-b border-slate-200 bg-slate-50">
-          <tr>
-            <th class="text-left px-4 py-3 font-mono font-semibold text-slate-700">LAND PROPERTY</th>
-            <th class="text-left px-4 py-3 font-mono font-semibold text-slate-700">BUYER</th>
-            <th class="text-left px-4 py-3 font-mono font-semibold text-slate-700">SELLER</th>
-            <th class="text-left px-4 py-3 font-mono font-semibold text-slate-700">CRYPTO AMOUNT</th>
-            <th class="text-left px-4 py-3 font-mono font-semibold text-slate-700">BLOCKCHAIN TX HASH</th>
-            <th class="text-left px-4 py-3 font-mono font-semibold text-slate-700">STATUS</th>
-            <th class="text-right px-4 py-3 font-mono font-semibold text-slate-700">AUDIT & RELEASE</th>
+      <table class="w-full text-sm text-left border-collapse">
+        <thead>
+          <tr class="border-b border-slate-200 bg-slate-50/80">
+            <th class="py-3.5 px-5 font-mono text-xs font-semibold text-slate-600 uppercase tracking-wider">Property & Title Doc</th>
+            <th class="py-3.5 px-4 font-mono text-xs font-semibold text-slate-600 uppercase tracking-wider">Buyer</th>
+            <th class="py-3.5 px-4 font-mono text-xs font-semibold text-slate-600 uppercase tracking-wider">Seller</th>
+            <th class="py-3.5 px-4 font-mono text-xs font-semibold text-slate-600 uppercase tracking-wider">Escrow Amount</th>
+            <th class="py-3.5 px-4 font-mono text-xs font-semibold text-slate-600 uppercase tracking-wider">Proof of Payment</th>
+            <th class="py-3.5 px-4 font-mono text-xs font-semibold text-slate-600 uppercase tracking-wider">Status</th>
+            <th class="py-3.5 px-5 font-mono text-xs font-semibold text-slate-600 uppercase tracking-wider text-right">Audit Action</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-slate-100">
           {% for tx in escrow_transactions %}
-          <tr class="border-b border-slate-200 hover:bg-slate-50">
-            <td class="px-4 py-4">
+          <tr class="hover:bg-slate-50/80 transition duration-150">
+            <td class="py-4 px-5">
               <div class="font-semibold text-slate-900">
-                <a href="{% url 'app:land_detail' slug=tx.land.slug %}" class="text-slate-900 hover:text-emerald-600">{{ tx.land.title }}</a>
+                <a href="{% url 'app:land_detail' slug=tx.land.slug %}" class="text-slate-900 hover:text-emerald-600 transition">{{ tx.land.title }}</a>
               </div>
-              <div class="text-xs text-slate-600 font-mono">
-                <i class="fa-solid fa-file-contract mr-1"></i> {{ tx.land.parcel_id }}
+              <div class="text-xs text-slate-500 font-mono mt-1 flex items-center gap-2">
+                <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                  <i class="fa-solid fa-file-contract mr-1 text-slate-400"></i> {{ tx.land.parcel_id|default:"Doc Pending" }}
+                </span>
+                <span><i class="fa-solid fa-location-dot mr-0.5 text-slate-400"></i> {{ tx.land.location|truncatechars:24 }}</span>
               </div>
             </td>
-            <td class="px-4 py-4">
+            <td class="py-4 px-4">
               <div class="font-semibold text-slate-900">{{ tx.buyer.username }}</div>
-              <div class="text-xs text-slate-600 font-mono max-w-xs truncate">{{ tx.buyer_wallet_address }}</div>
+              <div class="mt-0.5" title="{{ tx.buyer_wallet_address }}">
+                <span class="font-mono text-xs text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                  {{ tx.buyer_wallet_address|slice:":6" }}...{{ tx.buyer_wallet_address|slice:"-4:" }}
+                </span>
+              </div>
             </td>
-            <td class="px-4 py-4">
+            <td class="py-4 px-4">
               <div class="font-semibold text-slate-900">{{ tx.seller.username }}</div>
-              <div class="text-xs text-slate-600 font-mono max-w-xs truncate">{{ tx.seller_wallet_address }}</div>
+              <div class="mt-0.5" title="{{ tx.seller_wallet_address }}">
+                <span class="font-mono text-xs text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                  {{ tx.seller_wallet_address|slice:":6" }}...{{ tx.seller_wallet_address|slice:"-4:" }}
+                </span>
+              </div>
             </td>
-            <td class="px-4 py-4">
-              <div class="font-bold text-emerald-600 font-mono">{{ tx.offer_price_crypto }} {{ tx.crypto_currency }}</div>
+            <td class="py-4 px-4">
+              <div class="font-bold text-emerald-600 font-mono text-sm">{{ tx.offer_price_crypto }} {{ tx.crypto_currency }}</div>
               <div class="text-xs text-slate-500 font-mono">≈ {{ tx.offer_price_naira|format_naira }}</div>
             </td>
-            <td class="px-4 py-4">
+            <td class="py-4 px-4">
               {% if tx.tx_hash %}
-              <a href="https://etherscan.io/tx/{{ tx.tx_hash }}" target="_blank" class="inline-flex items-center px-2 py-1 text-xs font-mono text-emerald-600 hover:underline border border-slate-300 rounded" title="{{ tx.tx_hash }}">
-                {{ tx.tx_hash|slice:":12" }}... <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
+              <a href="https://etherscan.io/tx/{{ tx.tx_hash }}" target="_blank" class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-md hover:bg-emerald-100 transition shadow-xs" title="{{ tx.tx_hash }}">
+                <i class="fa-brands fa-ethereum text-emerald-600"></i> {{ tx.tx_hash|slice:":8" }}...{{ tx.tx_hash|slice:"-4:" }} <i class="fa-solid fa-arrow-up-right-from-square text-[9px] ml-0.5"></i>
               </a>
               {% else %}
-              <span class="text-xs text-slate-600 font-mono">Pending Tx Submission</span>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs text-slate-400 bg-slate-100 rounded font-mono">
+                <i class="fa-regular fa-clock"></i> Unsubmitted
+              </span>
               {% endif %}
             </td>
-            <td class="px-4 py-4">
-              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                {% if tx.status == 'escrow_locked' %}bg-amber-100 text-amber-800
-                {% elif tx.status == 'completed' %}bg-emerald-100 text-emerald-800
-                {% else %}bg-slate-100 text-slate-800{% endif %}">
+            <td class="py-4 px-4">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
+                {% if tx.status == 'escrow_locked' %}bg-amber-100 text-amber-800 border border-amber-200
+                {% elif tx.status == 'completed' %}bg-emerald-100 text-emerald-800 border border-emerald-200
+                {% else %}bg-slate-100 text-slate-700 border border-slate-200{% endif %}">
+                <span class="w-1.5 h-1.5 rounded-full mr-1.5 {% if tx.status == 'escrow_locked' %}bg-amber-500 animate-pulse{% elif tx.status == 'completed' %}bg-emerald-500{% else %}bg-slate-400{% endif %}"></span>
                 {{ tx.get_status_display }}
               </span>
             </td>
-            <td class="px-4 py-4 text-right">
-              {% if tx.status == 'escrow_locked' %}
-                <a href="{% url 'app:confirm_escrow_payment' transaction_id=tx.transaction_id %}" class="px-3 py-2 text-sm font-semibold bg-emerald-600 text-white rounded hover:bg-emerald-700 transition inline-block" onclick="return confirm('Confirm transaction verification and transfer deed to buyer?');">
-                  <i class="fa-solid fa-circle-check mr-1"></i> Verify & Release Funds
+            <td class="py-4 px-5 text-right whitespace-nowrap">
+              <div class="flex items-center justify-end gap-1.5">
+                {% if tx.status == 'escrow_locked' %}
+                  <a href="{% url 'app:confirm_escrow_payment' transaction_id=tx.transaction_id %}" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition shadow-sm" onclick="return confirm('Confirm transaction verification and transfer deed to buyer?');">
+                    <i class="fa-solid fa-circle-check"></i> Verify & Release
+                  </a>
+                {% else %}
+                  <span class="text-xs text-slate-400 font-medium px-2 py-1">Monitoring</span>
+                {% endif %}
+                <a href="{% url 'app:generate_receipt_pdf' transaction_id=tx.transaction_id %}" target="_blank" class="inline-flex items-center px-2 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg transition shadow-xs" title="View PDF Receipt">
+                  <i class="fa-solid fa-file-pdf text-emerald-600"></i>
                 </a>
-              {% else %}
-                <span class="text-xs text-slate-600">Monitoring</span>
-              {% endif %}
+              </div>
             </td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="7" class="px-4 py-8 text-center text-slate-600">
-              No active escrow transactions requiring manual audit.
+            <td colspan="7" class="py-12 px-6 text-center text-slate-500">
+              <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3 text-xl">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <div class="font-semibold text-slate-800 mb-1">No Active Escrow Deposits Awaiting Audit</div>
+              <p class="text-xs text-slate-400 max-w-sm mx-auto">When buyers submit on-chain transaction hashes for accepted offers, they will appear here for verification and title release.</p>
             </td>
           </tr>
           {% endfor %}
@@ -191,9 +227,14 @@
               </span>
             </td>
             <td class="px-4 py-4 text-right">
-              <a href="{% url 'app:generate_receipt_pdf' transaction_id=tx.transaction_id %}" target="_blank" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-300 rounded-lg hover:bg-emerald-100 transition duration-150 shadow-sm">
-                <i class="fa-solid fa-file-pdf mr-1.5"></i> Print Receipt
-              </a>
+              <div class="flex items-center justify-end gap-1.5">
+                <a href="{% url 'app:generate_receipt_pdf' transaction_id=tx.transaction_id %}" target="_blank" class="inline-flex items-center px-3 py-1.5 text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-300 rounded-lg hover:bg-emerald-100 transition duration-150 shadow-sm" title="View PDF Receipt">
+                  <i class="fa-solid fa-file-pdf mr-1.5"></i> View Receipt
+                </a>
+                <a href="{% url 'app:generate_receipt_pdf' transaction_id=tx.transaction_id %}?download=1" class="inline-flex items-center px-2.5 py-1.5 text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-200 transition duration-150 shadow-sm" title="Download PDF Receipt">
+                  <i class="fa-solid fa-download"></i>
+                </a>
+              </div>
             </td>
           </tr>
           {% empty %}

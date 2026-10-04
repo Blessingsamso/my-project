@@ -125,10 +125,15 @@
             {% if existing_offer %}
               <div class="mt-4 rounded-xl bg-slate-50 p-3 text-sm text-slate-700">
                 <div class="font-semibold">Your active offer</div>
-                <div class="mt-1">{{ existing_offer.offer_price_crypto }} {{ existing_offer.crypto_currency }}</div>
-                <div class="mt-1 text-xs text-slate-500">Status: {{ existing_offer.get_status_display }}</div>
+                <div class="mt-1 font-mono font-bold text-emerald-700">{{ existing_offer.offer_price_crypto }} {{ existing_offer.crypto_currency }}</div>
+                <div class="mt-1 text-xs text-slate-500">Status: <span class="font-semibold text-slate-700">{{ existing_offer.get_status_display }}</span></div>
               </div>
-              <a href="{% url 'app:buyer_dashboard' %}" class="mt-3 inline-flex w-full items-center justify-center rounded-lg bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-700">Track offer</a>
+              <div class="mt-3 flex gap-2">
+                <a href="{% url 'app:buyer_dashboard' %}" class="flex-1 inline-flex items-center justify-center rounded-lg bg-emerald-600 px-3 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 transition">Track offer</a>
+                <a href="{% url 'app:generate_receipt_pdf' transaction_id=existing_offer.transaction_id %}" target="_blank" class="inline-flex items-center justify-center rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-2.5 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 transition" title="View PDF Receipt">
+                  <i class="fa-solid fa-file-pdf mr-1.5"></i> Receipt
+                </a>
+              </div>
             {% else %}
               <button type="button" class="mt-4 inline-flex w-full items-center justify-center rounded-lg bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-700" data-bs-toggle="modal" data-bs-target="#offerModal">
                 Submit offer
