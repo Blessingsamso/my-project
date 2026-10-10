@@ -13,10 +13,15 @@ ENV PATH="/venv/bin:$PATH"
 WORKDIR /app
 
 # Install system dependencies
-# libpq5 is enough for the database driver at runtime
+# libpq5 for database driver, netcat for readiness checks, and WeasyPrint rendering libraries
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq5 \
     netcat-openbsd \
+    libpango-1.0-0 \
+    libpangoft2-1.0-0 \
+    libharfbuzz-subset0 \
+    libfontconfig1 \
+    fonts-liberation \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
